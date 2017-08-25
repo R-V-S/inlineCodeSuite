@@ -1,0 +1,27 @@
+.inlineCodeSuite-console {
+  overflow: scroll;
+
+  .cm-s-output {
+    height: auto;
+    margin-bottom: -0.57rem;
+
+  }
+
+  .CodeMirror-gutters {
+    left: 9px;
+  }
+
+  .CodeMirror-gutter {
+    &.prompt, &.output {
+      width: 25px;
+    }
+    &.prompt::before {
+      content: '\f054';
+      color: #888;
+      font: normal normal normal 14px/1 FontAwesome;
+      margin-left: 0px;
+      position: absolute;
+      top: 8px;
+    }
+  }
+}

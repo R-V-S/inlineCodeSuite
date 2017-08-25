@@ -1,0 +1,31 @@
+.inlineCodeEditor {
+  width: 100%;
+  box-sizing: border-box;
+  float: left;
+}
+
+.cm-s-cc-editor {
+  [class^="CodeMirror-lint-marker"] {
+    opacity: 0.5;
+    filter: grayscale(0.33);
+    transition: transform 0.3s ease;
+  }
+
+  [class^="CodeMirror-lint-message"] {
+    padding-left: 1.66rem;
+  }
+
+  &.hide-the-lint [class^="CodeMirror-lint-marker"] {
+    transform: translate3d(-20px,0,0);
+  }
+
+  .run-button {
+
+  }
+}
+
+.CodeMirror-lint-tooltip {
+  background-color: hsla(0,0%,0%,0.8) !important;
+  color: #aaa !important;
+  padding: 0.5rem !important;
+}

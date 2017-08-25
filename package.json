@@ -1,0 +1,30 @@
+{
+  "name": "inline-code-suite",
+  "version": "0.0.8",
+  "description": "Add dynamic, powerful inline code examples and challenges to your site",
+  "main": "dist/inline-code-suite.js",
+  "module": "src/index.js",
+  "scripts": {
+    "start": "webpack-dev-server -d --content-base examples/ --open --config webpack.config.js",
+    "inline": "webpack-dev-server -d --content-base examples/ --inline --open",
+    "build": "webpack -p --progress",
+    "test": "test"
+  },
+  "author": "R.V.S.",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "css-loader": "^0.26.0",
+    "path": "^0.12.7",
+    "style-loader": "^0.13.1",
+    "webpack": "^3.5.5"
+  },
+  "dependencies": {
+    "codemirror": "^5.27.4",
+    "jshint": "^2.9.4",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6"
+  }
+}

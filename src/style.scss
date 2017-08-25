@@ -1,0 +1,72 @@
+.inlineCodeSuite {
+  box-shadow: 2px 2px 2px hsla(0,0%,60%,0.1);
+  margin: 1rem;
+
+  .inlineCodeSuite-editors,
+  .inlineCodeSuite-output {
+    position: relative;
+    width: 50%;
+    overflow: hidden;
+    float: left;
+  }
+  
+  .inlineCodeSuite-editor-scroller,
+  .inlineCodeSuite-output-scroller {
+    transition: all 0.2s ease;
+  }
+
+  .inlineCodeSuite-output-scroller {
+    transform: translateX(-50%);
+
+    & > * {
+     width: 50%;
+     float: left;
+    }
+  }
+
+  .inlineCodeSuite-buttons {
+    background: hsl(0, 0%, 80%);
+    overflow: hidden;
+
+    .inlineCodeSuite-focus-buttons {
+      width: 50%;
+      float: left;
+    }
+
+    .inlineCodeSuite-output-buttons {
+      width: 50%;
+      float: right;
+      text-align: right;
+    }
+    
+    button {
+      background: hsl(0, 0%, 67%);
+      border: none;
+      color: hsl(0, 0%, 100%);
+      font-weight: bold;
+      margin-right: 1px;
+      outline: none;
+      padding: 0.6rem 1.4rem;
+      text-transform: uppercase;
+    }
+
+    button:hover:not(.active) {
+      background: #eee;
+      color: #555;
+      cursor: pointer;
+    }
+    
+    button.active {
+      background: hsl(0, 0%, 27%);
+    }
+  }
+  
+  .inlineCodeSuite-run-buttons {
+    clear: both;
+    overflow: hidden;
+    
+    button {
+      float: right;
+    }
+  }
+}
