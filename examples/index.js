@@ -154,9 +154,13 @@ function add(a, b) {
           name: 'Example Tests',
           mode: 'javascript',
           value: `
-let result = expect( add(2,2) ).toEqual(4);
-console.log( result ? 'OK' : '...' )
-`,
+describe("Your function", () => {
+  it("should work", () => {
+    Test.assertEquals(add(2,2), 4 , "Sum should be 4");
+    Test.assertEquals(add(30,0), 30 , "Sum should be 30");
+  });
+});
+          `,
           preview: false,
           runButton: 'TEST!'
         }
@@ -164,13 +168,31 @@ console.log( result ? 'OK' : '...' )
       scripts: [
         {
           type: 'text/javascript',
-          value: `class expect {
-            constructor(actual) {
-            this.actual = actual;
-            }
+          value: `const describe = (subject, tests) => {
+            console.log(\`Testing \${subject.toLowerCase()}...\`)
+            tests()
+            console.log(\`\n\${Test.run} tests run. \${Test.failed} failed. \${Test.passed} passed.\`)
+            if (Test.failed === 0) { console.log('HUZZAH!!!') } else { console.log('FAIL.')}
+          };
+          
+          const it = (test, tests) => {
+            tests()
             
-            toEqual(ideal) {
-              return this.actual === ideal ? true : false
+          }
+          
+          const Test = {
+            run: 0,
+            passed: 0,
+            failed: 0,
+            assertEquals: (actual, ideal, message) => {
+              Test.run++
+              if (actual === ideal) {
+                Test.passed++
+                console.log(\`Passed: \${message}\`)
+              } else {
+                Test.failed++
+                console.log(\`Failed: \${message}\`)
+              }
             }
           }
           `
@@ -178,8 +200,13 @@ console.log( result ? 'OK' : '...' )
         {
           type: 'text/javascript',
           value: `
-           let result = expect( add(2,2) ).toEqual(4);
-           console.log( result ? 'HUZZAH!' : 'Nope.' )
+describe("final round of tests", () => {
+  it("should work", () => {
+    Test.assertEquals(add(-2,2), 0 , "Sum should be 0");
+    Test.assertEquals(add(10,1), 11 , "Sum should be 11");
+    Test.assertEquals(add(0,0), 0 , "Sum should be 0 again");
+  });
+});          
           `,
           runButton: 'Submit'
         }

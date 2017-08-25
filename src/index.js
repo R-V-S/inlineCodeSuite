@@ -132,7 +132,9 @@ export default class InlineCodeSuite {
     this.elements.runButtonSection.append(button)
     
     button.onclick = e => {
-      this.runScript({ script: editor.rendered.getValue() })
+      let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
+      let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + editor.rendered.getValue()
+      this.runScript({ script: mergedScript })
     }
     
     this.elements.buttons.focus.push(button)
@@ -144,7 +146,9 @@ export default class InlineCodeSuite {
     this.elements.runButtonSection.append(button)
     
     button.onclick = e => {
-      this.runScript({ script: script.value })
+      let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
+      let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + script.value
+      this.runScript({ script: mergedScript })
     }
     
     this.elements.buttons.focus.push(button)
