@@ -26,11 +26,5 @@ module.exports = {
   resolve: {
     modules: ['node_modules', path.resolve(__dirname, 'app')],
     extensions: ['.js', '.css']
-  },
-  devtool: 'inline-source-map',
-  devServer: {
-    contentBase: './examples',
-    publicPath: '/',
   }
-
 }
