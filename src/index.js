@@ -174,13 +174,16 @@ export default class InlineCodeSuite {
     editor.rendered.element.style.width = `${100 / this.editors.length}%`
   }
 
-  runScript({ script: script, clear = true, showConsole = true }) {
+  runScript({ script: script, clear = true, showConsole = true, showErrors = true }) {
     let compiled = this.compiler.compile({
       code: script,
       logOnly: true
     })
     if (clear) { this.console.clear() }
-    this.console.appendOutput( compiled.output )
+    if (showErrors || compiled.success == true) {
+      console.log(compiled.output)
+      this.console.appendOutput( compiled.output )
+    }
     if (showConsole) { this.showConsole() }
   }
 
@@ -188,7 +191,7 @@ export default class InlineCodeSuite {
     let validScriptTypes = ['javascript']
     this.editors.forEach( editor => {
       if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.preview !== false ) { 
-        this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false })
+        this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false, showErrors: false })
       }
     })
   }

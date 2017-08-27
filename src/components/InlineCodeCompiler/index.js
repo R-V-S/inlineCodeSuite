@@ -4,21 +4,21 @@ export default class InlineCodeCompiler {
   }
 
   compile({code, mode = 'script', logOnly = false}) {
-    let output, log = '', success = false
+    let output, log = [], success = false
     try {
       const console = {
         log: (msg) => { 
           if (mode == 'console') { throw msg }
-          log += `${msg}\n`
+          log.push(msg)
           return
         }
       }
       const alert = function(msg) { 
         if (mode == 'console') { throw 'Grumpy cat says NO' }
-        log += `ALERT: ${msg}\n`
+        log.push(`Suppressed Alert: ${msg}`)
       }
       output = eval(code)
-      output = log + (logOnly ? '' : output)
+      output = log.join('\n') + (logOnly ? '' : output)
       success = true
     } catch(e) {
       output = e

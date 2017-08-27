@@ -27,5 +27,10 @@ module.exports = {
     modules: ['node_modules', path.resolve(__dirname, 'app')],
     extensions: ['.js', '.css']
   },
-  devtool: 'source-map'
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: './examples',
+    publicPath: '/',
+  }
+
 }

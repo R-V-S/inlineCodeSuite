@@ -5,8 +5,8 @@
   "main": "dist/inline-code-suite.js",
   "module": "src/index.js",
   "scripts": {
-    "start": "webpack-dev-server -d --content-base examples/ --open --config webpack.config.js",
-    "inline": "webpack-dev-server -d --content-base examples/ --inline --open",
+    "start": "webpack-dev-server -d --open",
+    "inline": "webpack-dev-server -d --inline --open",
     "watch": "webpack -d --watch",
     "build": "webpack -p --progress",
     "test": "test"
@@ -20,7 +20,8 @@
     "css-loader": "^0.26.0",
     "path": "^0.12.7",
     "style-loader": "^0.13.1",
-    "webpack": "^3.5.5"
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
     "codemirror": "^5.27.4",

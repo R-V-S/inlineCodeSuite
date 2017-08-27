@@ -99,7 +99,18 @@ export default class InlineCodeConsole {
 
   appendOutput(output) {
     if (!output) { return false }
-    this.consoleOutput.setValue( this.consoleOutput.getValue() + "\n" + output)
+    let consoleContents = this.consoleOutput.getValue().split('\n')
+    let lastOutputtedLine = consoleContents[consoleContents.length - 1].replace(/\s\(x\d\)$/, '')
+    if ( lastOutputtedLine == output) {
+      let existingDisplayedCount = consoleContents[consoleContents.length - 1].match(/\s\(x(\d)\)$/) 
+      console.log('yeah', existingDisplayedCount)
+      let count = existingDisplayedCount ? parseInt(existingDisplayedCount[1])+1 : 2
+      consoleContents[consoleContents.length - 1] = `${lastOutputtedLine} (x${count})`
+    } else {
+      consoleContents.push(output)
+    }
+    this.consoleOutput.setValue( consoleContents.join('\n') )  
+    
   }
 
   clear() {
