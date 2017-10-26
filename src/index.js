@@ -69,7 +69,7 @@ export default class InlineCodeSuite {
     let button = document.createElement('button')
     button.textContent = editor.name || editor.mode
     button.dataset.id = editor.id
-    this.elements.focusButtonSection.append(button)
+    this.elements.focusButtonSection.appendChild(button)
     button.onclick = e => {
       this.elements.editorScroller.style.transform = `translateX(-${index * (100 / this.editors.length)}%)`
       this.activeFocusButton().classList.remove('active')
@@ -85,7 +85,7 @@ export default class InlineCodeSuite {
   createOutputButtons() {
     this.consoleButton = document.createElement('button')
     this.consoleButton.textContent = 'Console'
-    this.elements.outputButtonSection.append(this.consoleButton)
+    this.elements.outputButtonSection.appendChild(this.consoleButton)
     
     this.consoleButton.onclick = e => {
       this.showConsole()
@@ -95,7 +95,7 @@ export default class InlineCodeSuite {
     this.previewButton = document.createElement('button')
     this.previewButton.textContent = 'Preview'
     this.previewButton.classList.add('active')
-    this.elements.outputButtonSection.append(this.previewButton)
+    this.elements.outputButtonSection.appendChild(this.previewButton)
 
     this.previewButton.onclick = e => {
       this.showPreview()
@@ -129,7 +129,7 @@ export default class InlineCodeSuite {
     let button = document.createElement('button')
     button.textContent = editor.runButton || 'RUN'
     button.dataset.id = editor.id
-    this.elements.runButtonSection.append(button)
+    this.elements.runButtonSection.appendChild(button)
     
     button.onclick = e => {
       let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
@@ -143,7 +143,7 @@ export default class InlineCodeSuite {
   createScriptRunButton({ script }) {
     let button = document.createElement('button')
     button.textContent = script.runButton
-    this.elements.runButtonSection.append(button)
+    this.elements.runButtonSection.appendChild(button)
     
     button.onclick = e => {
       let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
@@ -209,7 +209,7 @@ export default class InlineCodeSuite {
     this.elements.root = document.createElement('section')
     this.elements.root.classList.add('inlineCodeSuite')
     if (this.name) { this.elements.root.setAttribute('id', `inlineCodeSuite-${this.name}`) }
-    root.append( this.elements.root )
+    root.appendChild( this.elements.root )
     
     this.elements.buttons = {}
     this.elements.buttons.run = []
@@ -275,7 +275,7 @@ export default class InlineCodeSuite {
   createElement({ tag, classes, parent, styles = [] }) {
     let element = document.createElement(tag)
     element.className = classes
-    parent.append(element)
+    parent.appendChild(element)
     
     for (let key in styles) {
       element.style[key] = styles[key]
