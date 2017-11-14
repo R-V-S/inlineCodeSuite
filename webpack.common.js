@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  entry: './src/index',
+  entry: ['babel-polyfill', './src/index'],
   output: {
     path: path.resolve('./dist'),
     filename: 'inline-code-suite.js',

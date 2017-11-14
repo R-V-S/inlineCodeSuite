@@ -6,13 +6,22 @@ import InlineCodeConsole from './components/InlineCodeConsole'
 import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
-  constructor ({ root, editors, scripts, autoRun = true, name, height = '300px' }) {
+  constructor ({ root, editors, scripts, autoRun = true, name, height = '300px', importScripts }) {
     this.includeScripts = scripts.filter( script => !script.runButton )
     this.runScripts = scripts.filter( script => script.runButton )
+    this.importScripts = importScripts
 
     this.autoRun = autoRun
     this.name = name
     this.editors = editors
+
+    this.eventHandlers = {
+      suiteInitialized: null,
+      compilerWillRun: null,
+      compilerDidRun: null,
+      previewWillUpdate: null,
+      previewDidUpdate: null
+    }
     
     this.height = Number.isInteger(height) ? `${height}px` : height
     
@@ -28,12 +37,17 @@ export default class InlineCodeSuite {
     this.activeId = this.editors[0].id
     this.activeFocusButton().classList.add('active')
     
-    this.console = new InlineCodeConsole({
+    this.inlineCodeConsole = new InlineCodeConsole({
+      dispatchEvent: (...params) => this.dispatchEvent(...params),
+      height: this.height,
       root: this.elements.outputScroller
-      , height: this.height
     })
 
-    this.compiler = new InlineCodeCompiler({ console: this.console })
+    this.compiler = new InlineCodeCompiler({ 
+      dispatchEvent: (...params) => this.dispatchEvent(...params),
+      inlineCodeConsole: this.inlineCodeConsole, 
+      importScripts: this.importScripts
+    })
     
     this.createPreview()
     
@@ -42,6 +56,11 @@ export default class InlineCodeSuite {
     if (!this.preview) { this.showConsole() }
     
     this.updateOutput()
+  }
+
+  addEventListener(type, callback) {
+    if ( !this.eventHandlers.hasOwnProperty(type) || typeof callback !== 'function') { return }
+    this.eventHandlers[type] = callback
   }
   
   activeFocusButton() {
@@ -110,7 +129,12 @@ export default class InlineCodeSuite {
     , scripts: this.mergedScripts(this.editors, this.includeScripts)
     , stylesheets: this.stylesheets(this.editors)
     , content: this.content(this.editors) 
-  })
+    })
+  }
+
+  dispatchEvent(type, data) {
+    if ( !this.eventHandlers.hasOwnProperty(type) || typeof this.eventHandlers[type] !== 'function') { return }
+    this.eventHandlers[type](data)
   }
 
   showConsole() {
@@ -174,15 +198,14 @@ export default class InlineCodeSuite {
     editor.rendered.element.style.width = `${100 / this.editors.length}%`
   }
 
-  runScript({ script: script, clear = true, showConsole = true, showErrors = true }) {
-    let compiled = this.compiler.compile({
+  async runScript({ script: script, clear = true, showConsole = true, showErrors = true }) {
+    let compiled = await this.compiler.compile({
       code: script,
       logOnly: true
     })
-    if (clear) { this.console.clear() }
+    if (clear) { this.inlineCodeConsole.clear() }
     if (showErrors || compiled.success == true) {
-      console.log(compiled.output)
-      this.console.appendOutput( compiled.output )
+      this.inlineCodeConsole.appendOutput( compiled.output )
     }
     if (showConsole) { this.showConsole() }
   }
@@ -306,7 +329,7 @@ export default class InlineCodeSuite {
       })
     }
     this.runEditorScripts()
-    this.console.scrollToBottom()
+    this.inlineCodeConsole.scrollToBottom()
   }
 }
 

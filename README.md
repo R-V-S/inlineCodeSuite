@@ -96,10 +96,11 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
   * `value`: A string. The starting code for the editor
   * `preview` (optional): A boolean that determines whether or not the editor's code should be run when the preview pane is updated
   * `runButton` (optional): A string that defines the name of the button that will execute the code on click. 
-  * `scripts` (optional): An array of objects. Each object declares a new non-editor script. Each script object accepts the following properties:
-    * `type`: A string. A valid HTML `type` attribute like `text/javascript`
-    * `value`: A string. The script code
-    * `runButton` (optional): A string that defines the name of the button that will execute the code on click.
+* `importScripts` (optional): An array of strings declaring relative filenames. The compiler will import these files inside the script's execution context. You can use this to define dependencies or alter the context itself
+* `scripts` (optional): An array of objects. Each object declares a new non-editor script. Each script object accepts the following properties:
+  * `type`: A string. A valid HTML `type` attribute like `text/javascript`
+  * `value`: A string. The script's code
+  * `runButton` (optional): A string that defines the name of the button that will execute the code on click
 
-
+## Events
 

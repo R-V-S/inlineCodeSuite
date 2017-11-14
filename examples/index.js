@@ -1,7 +1,9 @@
+const b = 8;
+
 document.onreadystatechange = function () {  
   if (document.readyState == "interactive") {
     const rootElement = document.getElementsByTagName('app-root')[0]
-    new InlineCodeSuite({ 
+    const inlineCodeSuite = new InlineCodeSuite({ 
       name: 'Test1',
       root: rootElement, 
       height: 400,
@@ -132,12 +134,13 @@ body {
       scripts: [
         {
           type: 'text/javascript',
-          value: 'console.log("a hidden script!")'
+          value: 'window.a = 7'
         }
-      ]
+      ],
+      importScripts: ['test.js']
     })
 
-    new InlineCodeSuite({ 
+    example2 = new InlineCodeSuite({ 
       name: 'Test2',
       root: rootElement, 
       height: 400,
@@ -212,5 +215,7 @@ describe("final round of tests", () => {
         }
       ]
     })
+    example2.addEventListener('compilerWillRun', (data) => { console.log('event!', data) } )
   }
+
 }

@@ -1,7 +1,5 @@
 import './style.scss'
 
-import InlineCodeCompiler from './../InlineCodeCompiler'
-
 export default class InlineCodePreview {
   constructor({ root, scripts, stylesheets, content, height }) {
     this.element = document.createElement('iframe')
@@ -22,8 +20,12 @@ export default class InlineCodePreview {
         </head>
         <body>
           ${ content }
-          <script>var console = { log: function() {} }</script>
-          ${ scripts.map( script => `<script type="${script.type}">${script.value}</script>` ).join('\n') }
+          <script>//var console = { log: () => {} }</script>
+          ${ scripts.map( script => 
+            `<script type="${script.type}" ${script.src ? `src="${script.src}"` : ''}>
+              ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
+            </script>` )
+          .join('\n') }
         </body>
       </html>`
   }
