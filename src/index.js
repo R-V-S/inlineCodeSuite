@@ -6,11 +6,13 @@ import InlineCodeConsole from './components/InlineCodeConsole'
 import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
-  constructor ({ root, editors, scripts, autoRun = true, name, height = '300px', importScripts }) {
-    this.includeScripts = scripts.filter( script => !script.runButton )
-    this.runScripts = scripts.filter( script => script.runButton )
+  constructor ({ root, editors, scripts, preview, autoRun = true, name, height = '300px', importScripts }) {
+    this.includeScripts = scripts ? scripts.filter( script => !script.runButton ) : []
+    this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
     this.importScripts = importScripts
 
+    // TODO: consolidate all settings into this.settings object (currently only used by preview setting to avoid conflict with this.preview object)
+    this.settings = { preview: preview }
     this.autoRun = autoRun
     this.name = name
     this.editors = editors
@@ -70,7 +72,7 @@ export default class InlineCodeSuite {
   mergedScripts(editors, scripts) {
     let validScriptTypes = ['javascript']
     editors.forEach( editor => {
-      if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.preview !== false ) { 
+      if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.hasPreview !== false ) { 
         scripts.push({ type: 'text/javascript', value: editor.rendered.getValue() })
       }
     })
@@ -81,7 +83,11 @@ export default class InlineCodeSuite {
   content(editors) {
     let htmleditor = editors.find( editor => this.isHtml(editor) )
     if (!htmleditor) { return }
-    return htmleditor.rendered.getValue()
+    
+    let content = htmleditor.rendered.getValue()
+    try { content = this.settings.preview.html.pre + content } catch(e) {}
+    try { content += this.settings.preview.html.post } catch(e) {}
+    return content
   }
   
   createFocusButton({ editor, index }) {
@@ -124,11 +130,12 @@ export default class InlineCodeSuite {
   createPreview() {
     if ( !this.content(this.editors) ) { return }
     this.preview = new InlineCodePreview({ 
-      root: this.elements.outputScroller
-    , height: this.height
-    , scripts: this.mergedScripts(this.editors, this.includeScripts)
-    , stylesheets: this.stylesheets(this.editors)
-    , content: this.content(this.editors) 
+      content: this.content(this.editors), 
+      height: this.height, 
+      root: this.elements.outputScroller, 
+      scripts: this.mergedScripts(this.editors, this.includeScripts), 
+      stylesheets: this.stylesheets(this.editors), 
+      settings: this.settings.preview
     })
   }
 
@@ -213,7 +220,7 @@ export default class InlineCodeSuite {
   runEditorScripts() {
     let validScriptTypes = ['javascript']
     this.editors.forEach( editor => {
-      if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.preview !== false ) { 
+      if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.hasPreview !== false ) { 
         this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false, showErrors: false })
       }
     })
@@ -310,12 +317,15 @@ export default class InlineCodeSuite {
   stylesheets(editors) {
     let stylesheets = []
     
-    let validStylesheets = ['css']
+    let validStylesheets = ['css'] // could be expanded to scss, less, etc in the future
+    // add styles from editors
     editors.forEach( editor => {
       if( validStylesheets.includes( editor.rendered.getMode() ) ) { 
         stylesheets.push( editor.rendered.getValue() )
       }
     })
+    // add style string from preview settings
+    try { stylesheets.push(this.settings.preview.styles) } catch(e) {}
     
     return stylesheets
   }

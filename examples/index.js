@@ -3,8 +3,8 @@ const b = 8;
 document.onreadystatechange = function () {  
   if (document.readyState == "interactive") {
     const rootElement = document.getElementsByTagName('app-root')[0]
-    const inlineCodeSuite = new InlineCodeSuite({ 
-      name: 'Test1',
+    const example1 = new InlineCodeSuite({ 
+      name: 'example-1',
       root: rootElement, 
       height: 400,
       editors: [
@@ -141,7 +141,7 @@ body {
     })
 
     example2 = new InlineCodeSuite({ 
-      name: 'Test2',
+      name: 'example-2',
       root: rootElement, 
       height: 400,
       editors: [
@@ -164,7 +164,7 @@ describe("Your function", () => {
   });
 });
           `,
-          preview: false,
+          hasPreview: false,
           runButton: 'TEST!'
         }
       ],
@@ -216,6 +216,28 @@ describe("final round of tests", () => {
       ]
     })
     example2.addEventListener('compilerWillRun', (data) => { console.log('event!', data) } )
+
+    example3 = new InlineCodeSuite({ 
+      name: 'example-3',
+      root: rootElement, 
+      height: 200,
+      editors: [
+        {
+          name: 'HTML',
+          mode: 'htmlmixed',
+          value: `<div class="test">test</div>`
+        }
+      ],
+      preview: {
+        styles: `
+          .test { background: blue; }
+        `,
+        html: {
+          pre: '<div>pre html</div>',
+          post: '<div>post html</div>'
+        }
+      }
+    })
   }
 
 }
