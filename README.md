@@ -27,6 +27,10 @@ InlineCodeSuite supports hidden script content that can be executed either:
 
 Why is this useful? You can prep an exercise or example with code that the user doesn't need to see. If you want to demonstrate how event listeners work, for example, then you only need to expose the event listener code in the example while the rest of the code is hidden. Use this to show simple example code that has a cool and impressive output.
 
+### Hidden HTML & CSS
+
+Just line scripts, HTML and CSS can be hidden as well, which allows you to create beautiful, complex examples/challenges, while only exposing to the end user the content that's immediately relevant. 
+
 ### Flex Buttons
 
 In addition to a flexible number of editor tabs, InlineCodeSuite also allows both editor content and/or hidden script content to be executed via button click. There can be as many buttons as
