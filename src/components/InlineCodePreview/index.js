@@ -9,7 +9,7 @@ export default class InlineCodePreview {
     this.element.sandbox = 'allow-scripts'
     this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts })
     this.element.style.height = height
-    root.append( this.element )
+    root.appendChild( this.element )
   }
   
   generateSrcDoc({ content, stylesheets, scripts, editorData }) {
