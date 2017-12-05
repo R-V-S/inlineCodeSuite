@@ -12,7 +12,7 @@ export default class InlineCodePreview {
     root.append( this.element )
   }
   
-  generateSrcDoc({ content, stylesheets, scripts }) {
+  generateSrcDoc({ content, stylesheets, scripts, editorData }) {
     return `
       <!doctype html>
       <html>
@@ -22,7 +22,10 @@ export default class InlineCodePreview {
         </head>
         <body>
           ${ content }
-          <script>//var console = { log: () => {} }</script>
+          <script>
+            const console = { log: () => {} }; 
+            const inlineCodeSuite = { editorData: ${JSON.stringify(editorData)} };
+          </script>
           ${ scripts.map( script => 
             `<script type="${script.type}" ${script.src ? `src="${script.src}"` : ''}>
               ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
@@ -32,7 +35,7 @@ export default class InlineCodePreview {
       </html>`
   }
   
-  update({ scripts, stylesheets, content }) { 
-    this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts })
+  update({ scripts, stylesheets, content, editorData }) { 
+    this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts, editorData: editorData })
   }
 }

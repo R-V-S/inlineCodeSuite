@@ -75,7 +75,7 @@ export default class InlineCodeConsole {
           }
           if (compiled.success) {
             this.scriptInScope += input + "\n"
-          }
+          } 
           this.history.unshift( input )
           this.historyIndex = 0
           this.appendOutput(input + "\n" + "// " + compiled.output)
@@ -107,7 +107,6 @@ export default class InlineCodeConsole {
     let lastOutputtedLine = consoleContents[consoleContents.length - 1].replace(/\s\(x\d\)$/, '')
     if ( lastOutputtedLine == output) {
       let existingDisplayedCount = consoleContents[consoleContents.length - 1].match(/\s\(x(\d)\)$/) 
-      console.log('yeah', existingDisplayedCount)
       let count = existingDisplayedCount ? parseInt(existingDisplayedCount[1])+1 : 2
       consoleContents[consoleContents.length - 1] = `${lastOutputtedLine} (x${count})`
     } else {

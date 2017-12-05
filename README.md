@@ -96,6 +96,7 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
   * `value`: A string. The starting code for the editor
   * `hasPreview` (optional): A boolean that determines whether or not the editor's code should be run when the preview pane is updated
   * `runButton` (optional): A string that defines the name of the button that will execute the code on click. 
+  * `preserveBaseIndentation` (optional): A boolean that disables the default stripping of excess left-side indentation.
 * `importScripts` (optional): An array of strings declaring relative filenames. The compiler will import these files inside the script's execution context. You can use this to define dependencies or alter the context itself
 * `scripts` (optional): An array of objects. Each object declares a new non-editor script. Each script object accepts the following properties:
   * `type`: A string. A valid HTML `type` attribute like `text/javascript`
@@ -107,3 +108,8 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
     * `post` (optional): HTML code to be added after the HTML editor code in the preview
   * `styles` (optional): Additional styles added to the preview that are not visible to the user
 
+## FAQ
+
+### Can I access the contents of the editor from within a script?
+
+Yes, scripts have access to a variable named `inlineCodeSuite`. That variable has a property, `editors`. `inlineCodeSuite.editors` is an object containing editor data, and individual editors can be accessed by the name of the editor. In addition to the initial properties passed to the editor during creation (`name`, `mode`, `value`, `hasPreview`, `runButton`, and `preserveBaseIndentation`), each editor also has a `userValue` property that stores the current state of the editor's contents at compile time. For example, if you have an editor named `CSS`, you could access its current contents from your script through `inlineCodeSuite.editors['CSS'].userValue`.

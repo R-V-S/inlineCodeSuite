@@ -6,37 +6,34 @@ export default class InlineCodeCompiler {
     this.mode = mode
   }
 
-  createContext(context = {}) {
-    const baseContext = {
-      console: {
-        log: (msg) => { 
-          if (this.mode == 'console') { throw msg }
-          log.push(msg)
-          return
-        }
-      },
-      alert: function(msg) { 
-        if (this.mode == 'console') { throw 'Grumpy cat says NO' }
-        log.push(`Suppressed Alert: ${msg}`)
-      },
-      mode: this.mode
-    }
-
-    return Object.assign(baseContext, context)
-  }
-
-  createWorker() {
+  createWorker({ editorData }) {
     const template = `
+      const inlineCodeSuite = {
+        mode: '${this.mode}',
+        editorData: ${JSON.stringify(editorData)}
+      }
       let log = []
       const console = { 
         log: (...msgs) => { log.push(...msgs); return undefined },
         warn: (...msgs) => { log.push( ...msgs.map( msg => 'WARNING: ' + msg ) ); return undefined },
         error: (...msgs) => { log.push( ...msgs.map( msg => 'ERROR: ' + msg ) ); return undefined },
       }
+      const alert = msg => { 
+        log.push( 'Grumpy cat says NO to alerts' )
+        if (inlineCodeSuite.mode === 'console') { throw 'Grumpy cat says NO to alerts!' }
+      }
       onmessage = (message) => {
         importScripts(...message.data.importScripts)
-        const result = eval(message.data.code)
-        postMessage( JSON.stringify( {result: result, log: log} ) )
+        let result
+        try { 
+          postMessage( JSON.stringify( {type: 'starting eval'} ) )
+          result = eval(message.data.code) 
+          postMessage( JSON.stringify( {type: 'result', result: result, success: true, log: log} ) )
+        } catch (e) {
+          log.push(e.message)
+          postMessage( JSON.stringify( {type: 'result', result: e.message, success: false, log: log, errorName: e.name} ) )
+        }
+        close()
       }
     `
     const blob = new Blob([template], {type: 'text/javascript'})
@@ -46,33 +43,55 @@ export default class InlineCodeCompiler {
     return worker
   }
 
-  async runWorker() {
-
-  }
-
-  async compile({code, logOnly = false}) {
-    this.dispatchEvent('compilerWillRun', { code: code, importScripts: this.importScripts, logOnly: logOnly })
-    let output, log = [], success = false
+  async compile({code, logOnly = false, editorData}) {
+    code = this.dispatchEvent('compilerWillRun', { code: code, importScripts: this.importScripts, logOnly: logOnly }) || code
+    let outputString, log = [], success = false, danger = true
     try {
-      this.worker = this.createWorker()
+      const worker = this.createWorker({ editorData: editorData })
       
       const compiledResult = await new Promise( (resolve, reject) => {
+        let timeout
         const contextBlob = new Blob([this.context], {type: 'text/javascript'})
-        this.worker.onmessage = message => resolve(message)
-        this.worker.onerror = error => reject(error)
-        this.worker.postMessage({code: code, importScripts: this.importScripts})
+        worker.onmessage = message => { 
+          // wait until eval begins before starting timeout so that import scripts have time to load
+          if ( JSON.parse(message.data).type === 'starting eval' ) {
+            timeout = setTimeout( () => {
+              worker.terminate()
+              reject({
+                success: false,
+                danger: true,
+                message: 'Timed out. Possible infinite loop.'
+              })
+            }, 100)
+          } else {
+            clearTimeout(timeout)
+            resolve(message) 
+          }
+        }
+        worker.onerror = error => { clearTimeout(timeout); reject(error) }
+        worker.postMessage({code: code, importScripts: this.importScripts})
       })
-      output = JSON.parse(compiledResult.data)
-      output = (this.mode === 'script' ? output.log.join('\n') : '' ) + (logOnly ? '' : output.result)
-      success = true
+      let outputData = typeof compiledResult.data === 'string' ? JSON.parse(compiledResult.data) : compiledResult.data
+      outputData = this.dispatchEvent('compilerDidRun', { code: code, importScripts: this.importScripts, logOnly: logOnly }) || outputData
+      success = outputData.success
+      if (outputData.success) {
+        danger = false 
+      } else if( outputData.errorName.match(/reference|syntax/i) ) {
+        danger = true
+      } 
+      outputString = (this.mode === 'script' ? outputData.log.join('\n') : '' ) + (logOnly ? '' : outputData.result)
     } catch(e) {
-      console.log('err', e)
-      output = e.message
+      outputString = e.message
       success = false
     }
+    if (this.onReady) { 
+      this.onReady()
+      this.onReady = false
+    }
     return {
-      output: output || (logOnly ? '' : 'undefined'),
-      success: success
+      output: outputString || (logOnly ? '' : 'undefined'),
+      success: success,
+      danger: danger
     }
   }
 }

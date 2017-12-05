@@ -7,6 +7,7 @@ import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
   constructor ({ root, editors, scripts, preview, autoRun = true, name, height = '300px', importScripts }) {
+    if (!root) { throw new Error('Root Element not found') }
     this.includeScripts = scripts ? scripts.filter( script => !script.runButton ) : []
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
     this.importScripts = importScripts
@@ -70,23 +71,23 @@ export default class InlineCodeSuite {
   }
   
   mergedScripts(editors, scripts) {
+    const result = Array.from(scripts)
     let validScriptTypes = ['javascript']
     editors.forEach( editor => {
       if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.hasPreview !== false ) { 
-        scripts.push({ type: 'text/javascript', value: editor.rendered.getValue() })
+        result.push({ type: 'text/javascript', value: editor.rendered.getValue() })
       }
     })
     
-    return scripts
+    return result
   }
   
   content(editors) {
     let htmleditor = editors.find( editor => this.isHtml(editor) )
-    if (!htmleditor) { return }
     
-    let content = htmleditor.rendered.getValue()
-    try { content = this.settings.preview.html.pre + content } catch(e) {}
-    try { content += this.settings.preview.html.post } catch(e) {}
+    let content = htmleditor ? htmleditor.rendered.getValue() : ''
+    try { content = (this.settings.preview.html.pre || '') + content } catch(e) {}
+    try { content += this.settings.preview.html.post || '' } catch(e) {}
     return content
   }
   
@@ -198,7 +199,7 @@ export default class InlineCodeSuite {
       , id: editor.id 
       , height: this.height
       , theme: editor.theme
-      , value: editor.value
+      , value: editor.preserveBaseIndentation ? editor.value : this.stripIndentation(editor.value)
       , onChange: e => { if (this.autoRun) { this.updateOutput(e) } }
     })
     
@@ -208,22 +209,41 @@ export default class InlineCodeSuite {
   async runScript({ script: script, clear = true, showConsole = true, showErrors = true }) {
     let compiled = await this.compiler.compile({
       code: script,
-      logOnly: true
+      logOnly: true,
+      editorData: this.getEditorData()
     })
     if (clear) { this.inlineCodeConsole.clear() }
     if (showErrors || compiled.success == true) {
       this.inlineCodeConsole.appendOutput( compiled.output )
     }
     if (showConsole) { this.showConsole() }
+
+    return compiled
   }
 
-  runEditorScripts() {
+  async runEditorScripts() {
     let validScriptTypes = ['javascript']
-    this.editors.forEach( editor => {
+    let output = false
+    await this.editors.forEach( async editor => {
       if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.hasPreview !== false ) { 
-        this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false, showErrors: false })
+        output = await this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false, showErrors: false })
       }
     })
+    return output
+  }
+
+  stripIndentation(text) {
+    if (!text) { return }
+    const indentCount = Math.min( ...text.split('\n').map( line => line.match(/\S/) ? line.match(/(^\s*)(?=\S)/)[0].length : 100 ) )
+    return text.split('\n').map( line => line.substr(indentCount) ).join('\n')
+  }
+
+  getEditorData() {
+    const editors = {}
+    this.editors.forEach( editor => {
+      editors[editor.name] = Object.assign({}, editor, {userValue: editor.rendered.getValue(), rendered: null })
+    })
+    return editors
   }
   
   id() {
@@ -329,16 +349,28 @@ export default class InlineCodeSuite {
     
     return stylesheets
   }
+
+  async updatePreview() {
+    const mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
+    if (!mergedScripts.length) { return false }
+
+    const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '')
+    const outputTest = await this.runScript({ script: mergedScript, showConsole: false })
+    if (outputTest.danger) { return false }
+
+    this.preview.update({ 
+      scripts: mergedScripts, 
+      stylesheets: this.stylesheets(this.editors), 
+      content: this.content(this.editors),
+      editorData: this.getEditorData()
+    })
+  }
   
-  updateOutput(e) {
-    if (this.preview) {
-      this.preview.update({ 
-          scripts: this.mergedScripts(this.editors, this.includeScripts)
-        , stylesheets: this.stylesheets(this.editors)
-        , content: this.content(this.editors) 
-      })
-    }
+  async updateOutput(e) {
     this.runEditorScripts()
+    if (this.preview) {
+      this.updatePreview()
+    }
     this.inlineCodeConsole.scrollToBottom()
   }
 }
