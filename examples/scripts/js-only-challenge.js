@@ -8,20 +8,20 @@
         name: 'JS',
         mode: 'javascript',
         value: `
-function add(a, b) {
-return a + b;
-}`
+          function add(a, b) {
+            return a + b;
+          }`
       },
       {
         name: 'Example Tests',
         mode: 'javascript',
         value: `
-describe("Your function", () => {
-it("should work", () => {
-  Test.assertEquals(add(2,2), 4 , "Sum should be 4");
-  Test.assertEquals(add(30,0), 30 , "Sum should be 30");
-});
-});
+          describe("Your function", () => {
+            it("should work", () => {
+              Test.assertEquals(add(2,2), 4 , "Sum should be 4");
+              Test.assertEquals(add(30,0), 30 , "Sum should be 30");
+            });
+          });
         `,
         hasPreview: false,
         runButton: 'TEST!'
