@@ -383,6 +383,6 @@ export default class InlineCodeSuite {
   }
 }
 
-if (typeof exports !== undefined) {
+try {
   module.exports = exports["default"]
-}
+} catch(e) {}
