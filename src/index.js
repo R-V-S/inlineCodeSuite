@@ -193,14 +193,15 @@ export default class InlineCodeSuite {
     if (editor.runButton) { this.createEditorRunButton({ editor: editor }) }
     
     editor.rendered = new InlineCodeEditor({ 
-        root: this.elements.editorScroller
-      , mode: editor.mode
-      , name: editor.name
-      , id: editor.id 
-      , height: this.height
-      , theme: editor.theme
-      , value: editor.preserveBaseIndentation ? editor.value : this.stripIndentation(editor.value)
-      , onChange: e => { if (this.autoRun) { this.updateOutput(e) } }
+      root: this.elements.editorScroller, 
+      mode: editor.mode, 
+      name: editor.name, 
+      id: editor.id , 
+      height: this.height, 
+      readOnly: editor.readOnly || false,
+      theme: editor.theme, 
+      value: editor.preserveBaseIndentation ? editor.value : this.stripIndentation(editor.value), 
+      onChange: e => { if (this.autoRun) { this.updateOutput(e) } }
     })
     
     editor.rendered.element.style.width = `${100 / this.editors.length}%`
@@ -253,12 +254,19 @@ export default class InlineCodeSuite {
   isHtml(editor) {
     return /^html/.test( editor.rendered.getMode() )
   }
+
+  slugify(string) {
+    return string.toLowerCase()
+      .replace(/[^\w\s-]/g, '') // remove non-word [a-z0-9_], non-whitespace, non-hyphen characters
+      .replace(/[\s_-]+/g, '-') // swap any length of whitespace, underscore, hyphen characters with a single -
+      .replace(/^-+|-+$/g, ''); // remove leading, trailing -
+  }
   
   scaffoldElements({ root, editorCount }) {
     this.elements = {}
     this.elements.root = document.createElement('section')
     this.elements.root.classList.add('inlineCodeSuite')
-    if (this.name) { this.elements.root.setAttribute('id', `inlineCodeSuite-${this.name}`) }
+    if (this.name) { this.elements.root.setAttribute('id', `inlineCodeSuite-${this.slugify(this.name)}`) }
     root.appendChild( this.elements.root )
     
     this.elements.buttons = {}
@@ -375,4 +383,6 @@ export default class InlineCodeSuite {
   }
 }
 
-module.exports = exports["default"]
+if (typeof exports !== undefined) {
+  module.exports = exports["default"]
+}

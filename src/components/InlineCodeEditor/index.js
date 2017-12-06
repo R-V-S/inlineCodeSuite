@@ -22,7 +22,7 @@ import 'codemirror/theme/material.css'
 import jshint from 'jshint'
 
 export default class InlineCodeEditor {
-  constructor ({ root, mode = 'javascript', theme = '', value = '', height, id, onChange = new Function}) {
+  constructor ({ root, mode = 'javascript', theme = '', value = '', height, id, onChange = new Function, readOnly = false}) {
 
     // scaffold elements
     this.element = document.createElement('section')
@@ -43,6 +43,7 @@ export default class InlineCodeEditor {
       foldGutter: true,
       gutters: ['CodeMirror-lint-markers', 'CodeMirror-foldgutter'],
       lineNumbers: true,
+      readOnly: readOnly ? 'nocursor' : false,
       lineWrapping: true,
       matchBrackets: true,
       mode: mode,

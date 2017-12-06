@@ -46,6 +46,13 @@ Disadvantages are:
 
   * By default, user content isn't saved. The user's work will be lost on page close/reload. This can be addressed by adding a hidden script that saves the editor content, either via a server call or session/local storage.
 
+### Read-only editors
+
+InlineCodeSuite allows individual editor tabs to be set to read-only, allowing you to show code to the user without allowing the user to modify it. Example use cases:
+
+  * You want the user to experiment with a CSS concept, so you might have two editor tabs, one for CSS and one for HTML. The HTML tab could be set to read-only. This would allow the user to see (but not edit) the HTML they're writing styles for, which could help them understand the relationship between the CSS rules and the structure of the HTML.
+  * You want users to be able to see tests that are going to be performed on their code without being able to edit the tests.
+
 ## Installation using NPM
 
 Run the install command:
@@ -85,7 +92,7 @@ Where version is the version number, minus the preceeding `v`, e.g. `inline-code
 
 Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the class and pass it **an object** with the following properties:
 
-* `name`: A string that can be used to target this instance of `InlineCodeSuite`. Adds an id of `inlineCodeSuite-{name}` to the container element
+* `name`: A string that can be used to target this instance of `InlineCodeSuite`. Adds an id of `inlineCodeSuite-{name}` to the container element, where `{name}` is "slugified" ("Hello World!!" => "hello-world")
 * `root`: The DOM object that the code suite will be attached to
 * `height` (optional): A string that defines the height of the code suite. Defaults to `300px`
 * `autorun` (optional): A boolean that defines whether the preview pane updates automatically when editor content changes. Defaults to `true`
@@ -99,8 +106,9 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
     * `ruby`
   * `value`: A string. The starting code for the editor
   * `hasPreview` (optional): A boolean that determines whether or not the editor's code should be run when the preview pane is updated
-  * `runButton` (optional): A string that defines the name of the button that will execute the code on click. 
-  * `preserveBaseIndentation` (optional): A boolean that disables the default stripping of excess left-side indentation.
+  * `preserveBaseIndentation` (optional): A boolean that disables the default stripping of excess left-side indentation if set to `true`
+  * `runButton` (optional): A string that defines the name of the button that will execute the code on click
+  * `readOnly` (optional): A boolean that disables the ability to edit the editor's contents if set to `true`. They can still see and select/highlight/copy the content
 * `importScripts` (optional): An array of strings declaring relative filenames. The compiler will import these files inside the script's execution context. You can use this to define dependencies or alter the context itself
 * `scripts` (optional): An array of objects. Each object declares a new non-editor script. Each script object accepts the following properties:
   * `type`: A string. A valid HTML `type` attribute like `text/javascript`
