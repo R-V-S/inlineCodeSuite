@@ -58,3 +58,5 @@ typings/
 .env
 
 stats.json
+
+.DS_Store
