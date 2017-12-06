@@ -360,12 +360,12 @@ export default class InlineCodeSuite {
 
   async updatePreview() {
     const mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
-    if (!mergedScripts.length) { return false }
-
-    const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '')
-    const outputTest = await this.runScript({ script: mergedScript, showConsole: false })
-    if (outputTest.danger) { return false }
-
+    if (mergedScripts.length) { 
+      const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '')
+      const outputTest = await this.runScript({ script: mergedScript, showConsole: false })
+      if (outputTest.danger) { return false }
+    }
+    
     this.preview.update({ 
       scripts: mergedScripts, 
       stylesheets: this.stylesheets(this.editors), 

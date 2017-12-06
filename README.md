@@ -67,11 +67,12 @@ Then, use the `import` command in supported environments (Babel-transpiled code 
 import 'inline-code-suite' as InlineCodeSuite;
 ```
 
-Or use `require` in supported environments (Node.js, Electron):
+Or use `require` in supported environments (Electron):
 
 ```js
 InlineCodeSuite = require('inline-code-suite');
 ```
+
 ## Installing using the CDN
 
 Add the script to the HTML file:
@@ -86,7 +87,7 @@ You can access specific versions, as well:
 <script src="https://d2atlz6q4yph1d.cloudfront.net/dist/inline-code-suite-{version}.js"></script>
 ```
 
-Where version is the version number, minus the preceeding `v`, e.g. `inline-code-suite-0.1.2`.
+Where version is the version number, minus the preceding `v`, e.g. `inline-code-suite-0.1.2`.
 
 ## Usage
 

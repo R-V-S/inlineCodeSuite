@@ -3,7 +3,7 @@
   "version": "0.1.6",
   "description": "Add dynamic, powerful inline code examples and challenges to your site",
   "main": "dist/inline-code-suite.js",
-  "module": "src/index.js",
+  "module": "dist/inline-code-suite.js",
   "scripts": {
     "start": "webpack-dev-server -d --open --config webpack.dev.js",
     "inline": "webpack-dev-server -d --inline --open --config webpack.dev.js",
@@ -14,6 +14,8 @@
   "author": "R.V.S.",
   "license": "GPL-3.0",
   "devDependencies": {
+  },
+  "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
@@ -22,9 +24,7 @@
     "style-loader": "^0.13.1",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.3",
-    "webpack-merge": "^4.1.0"
-  },
-  "dependencies": {
+    "webpack-merge": "^4.1.0",
     "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "codemirror": "^5.27.4",
