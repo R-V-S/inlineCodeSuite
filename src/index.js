@@ -132,6 +132,7 @@ export default class InlineCodeSuite {
     if ( !this.content(this.editors) ) { return }
     this.preview = new InlineCodePreview({ 
       content: this.content(this.editors), 
+      editorData: this.getEditorData(),
       height: this.height, 
       root: this.elements.outputScroller, 
       scripts: this.mergedScripts(this.editors, this.includeScripts), 

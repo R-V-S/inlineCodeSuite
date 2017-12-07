@@ -123,6 +123,14 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
 
 ## FAQ
 
-### Can I access the contents of the editor from within a script?
+### What's the easiest way to get started with InlineCodeSuite?
 
-Yes, scripts have access to a variable named `inlineCodeSuite`. That variable has a property, `editors`. `inlineCodeSuite.editors` is an object containing editor data, and individual editors can be accessed by the name of the editor. In addition to the initial properties passed to the editor during creation (`name`, `mode`, `value`, `hasPreview`, `runButton`, and `preserveBaseIndentation`), each editor also has a `userValue` property that stores the current state of the editor's contents at compile time. For example, if you have an editor named `CSS`, you could access its current contents from your script through `inlineCodeSuite.editors['CSS'].userValue`.
+Clone this repo on your local machine, run `npm install`, and then `npm start`. That will launch `/examples/index.html`, where you can see several variations of the editor in action. Each example is defined in its own script file in `/examples/sccripts`.
+
+### Can I access the contents of editor tabs from within a script that's passed to InlineCodeSuite?
+
+Yes, scripts have access to a variable named `inlineCodeSuite`. That variable has a property, `editors`. `inlineCodeSuite.editors` is an object containing editor data, and individual editors can be accessed by the name of the editor. In addition to the initial properties passed to the editor during creation (`name`, `mode`, `value`, `hasPreview`, `runButton`, and `preserveBaseIndentation`), each editor also has a `userValue` property that stores the current state of the editor's contents at compile time. For example, if you have an editor named `CSS`, you could access its current contents from your script through `inlineCodeSuite.editorData['CSS'].userValue`.
+
+### Can I access the contents of editor tabs from outside of InlineCodeSuite?
+
+Yes, each instance of InlineCodeSuite has a `.getEditorData()` method that will return editor data, including a `userValue` property for each editor.

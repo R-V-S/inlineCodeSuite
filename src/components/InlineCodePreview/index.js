@@ -1,13 +1,13 @@
 import './style.scss'
 
 export default class InlineCodePreview {
-  constructor({ root, scripts, stylesheets, content, height, settings }) {
+  constructor({ root, scripts, stylesheets, content, height, settings, editorData }) {
     this.settings = settings
 
     this.element = document.createElement('iframe')
     this.element.classList.add('inline-code-preview')
     this.element.sandbox = 'allow-scripts'
-    this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts })
+    this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts, editorData: editorData })
     this.element.style.height = height
     root.appendChild( this.element )
   }
