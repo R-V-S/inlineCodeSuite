@@ -142,7 +142,7 @@ Or create a new HTML file and paste the following contents. This is a bare-minim
     <script>
       
       new InlineCodeSuite({
-        name: 'ICS CDN Test',
+        name: 'hello-world',
         root: document.querySelector('app-root'),
         editors: [{
           name: 'HTML',
@@ -170,4 +170,8 @@ Yes, scripts have access to a variable named `inlineCodeSuite`. That variable ha
 
 ### Can I access the contents of editor tabs from outside of InlineCodeSuite?
 
-Yes, each instance of InlineCodeSuite has a `.getEditorData()` method that will return editor data, including a `userValue` property for each editor.
+Yes, each instance of InlineCodeSuite has a `getEditorData()` method that will return editor data, including a `userValue` property for each editor.
+
+### How can I tell what version of InlineCodeSuite I'm running?
+
+Each instance of InlineCodeSuite has a `version` property.

@@ -96,7 +96,7 @@ export default class InlineCodeConsole {
         }
       }
     })
-    this.codeConsole.setSize('100%', '40px')
+    this.codeConsole.setSize('100%', 'auto')
 
     this.registerClickHandler()
   }

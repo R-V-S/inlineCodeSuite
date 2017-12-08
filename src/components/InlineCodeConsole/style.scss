@@ -1,8 +1,8 @@
 .inlineCodeSuite-console {
   overflow: auto;
 
-  div {
-    overflow: hidden;
+  .cm-s-input {
+    height: auto;
   }
 
   .cm-s-output {

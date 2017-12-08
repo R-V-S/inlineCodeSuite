@@ -12,6 +12,8 @@ export default class InlineCodeSuite {
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
     this.importScripts = importScripts
 
+    this.version = '0.1.10'
+
     // TODO: consolidate all settings into this.settings object (currently only used by preview setting to avoid conflict with this.preview object)
     this.settings = { preview: preview }
     this.autoRun = autoRun
