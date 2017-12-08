@@ -46,12 +46,16 @@ Disadvantages are:
 
   * By default, user content isn't saved. The user's work will be lost on page close/reload. This can be addressed by adding a hidden script that saves the editor content, either via a server call or session/local storage.
 
-### Read-only editors
+### Read-only Editor Tabs
 
 InlineCodeSuite allows individual editor tabs to be set to read-only, allowing you to show code to the user without allowing the user to modify it. Example use cases:
 
   * You want the user to experiment with a CSS concept, so you might have two editor tabs, one for CSS and one for HTML. The HTML tab could be set to read-only. This would allow the user to see (but not edit) the HTML they're writing styles for, which could help them understand the relationship between the CSS rules and the structure of the HTML.
   * You want users to be able to see tests that are going to be performed on their code without being able to edit the tests.
+
+### Evaluation Using Web Workers
+
+Code execution feels fast and zippy because it's handled by web workers, which don't block the UI thread and can terminate gracefully if the script times out (i.e. if an infinite loop is accidentally created). 
 
 ## Installation using NPM
 
