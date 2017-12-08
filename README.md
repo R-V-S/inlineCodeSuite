@@ -174,4 +174,4 @@ Yes, each instance of InlineCodeSuite has a `getEditorData()` method that will r
 
 ### How can I tell what version of InlineCodeSuite I'm running?
 
-Each instance of InlineCodeSuite has a `version` property.
+Each instance of InlineCodeSuite has a `version` property. Check this if you're using the CDN to load the latest version of the editor and you've cleared or disabled your browser's cache, but you don't see the latest version's changes. The CDN can sometimes take a few hours to update.
