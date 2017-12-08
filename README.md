@@ -127,6 +127,43 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
 
 Clone this repo on your local machine, run `npm install`, and then `npm start`. That will launch `/examples/index.html`, where you can see several variations of the editor in action. Each example is defined in its own script file in `/examples/sccripts`.
 
+Or create a new HTML file and paste the following contents. This is a bare-minimum, "Hello World" exampleof InlineCodeSuite in action:
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>InlineCodeSuite Hello World</title>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <app-root></app-root>
+    <script src="https://d2atlz6q4yph1d.cloudfront.net/dist/inline-code-suite.js"></script>
+    <script>
+      
+      new InlineCodeSuite({
+        name: 'ICS CDN Test',
+        root: document.querySelector('app-root'),
+        editors: [{
+          name: 'HTML',
+          mode: 'htmlmixed',
+          value: '<div>hello world!</div>'
+        }, {
+          name: 'CSS',
+          mode: 'css',
+          value: 'body { background: papayawhip }'
+        }, {
+          name: 'JS',
+          mode: 'js',
+          value: ''
+        }]
+      })
+      
+    </script>
+  </body>
+</html>
+```
+
 ### Can I access the contents of editor tabs from within a script that's passed to InlineCodeSuite?
 
 Yes, scripts have access to a variable named `inlineCodeSuite`. That variable has a property, `editorData`. `inlineCodeSuite.editors` is an object containing editor data, and individual editors can be accessed by the name of the editor. In addition to the initial properties passed to the editor during creation (`name`, `mode`, `value`, `hasPreview`, `runButton`, and `preserveBaseIndentation`), each editor also has a `userValue` property that stores the current state of the editor's contents at compile time. For example, if you have an editor named `CSS`, you could access its current contents from your script through `inlineCodeSuite.editorData['CSS'].userValue`.

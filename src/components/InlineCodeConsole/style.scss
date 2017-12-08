@@ -1,5 +1,9 @@
 .inlineCodeSuite-console {
-  overflow: scroll;
+  overflow: auto;
+
+  div {
+    overflow: hidden;
+  }
 
   .cm-s-output {
     height: auto;
