@@ -127,7 +127,7 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
 
 Clone this repo on your local machine, run `npm install`, and then `npm start`. That will launch `/examples/index.html`, where you can see several variations of the editor in action. Each example is defined in its own script file in `/examples/sccripts`.
 
-Or create a new HTML file and paste the following contents. This is a bare-minimum, "Hello World" exampleof InlineCodeSuite in action:
+Or create a new HTML file and paste the following contents. This is a bare-minimum, "Hello World" example of InlineCodeSuite in action:
 
 ```html
 <!doctype html>
