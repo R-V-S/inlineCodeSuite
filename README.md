@@ -175,7 +175,3 @@ Yes, scripts have access to a variable named `inlineCodeSuite`. That variable ha
 ### Can I access the contents of editor tabs from outside of InlineCodeSuite?
 
 Yes, each instance of InlineCodeSuite has a `getEditorData()` method that will return editor data, including a `userValue` property for each editor.
-
-### How can I tell what version of InlineCodeSuite I'm running?
-
-Each instance of InlineCodeSuite has a `version` property. Check this if you're using the CDN to load the latest version of the editor and you've cleared or disabled your browser's cache, but you don't see the latest version's changes. The CDN can sometimes take a few hours to update.
