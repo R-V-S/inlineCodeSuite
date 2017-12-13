@@ -32,6 +32,9 @@ export default class InlineCodeEditor {
     const editorElement = document.createElement('textarea')
     this.element.appendChild(editorElement)
 
+    this.history = []
+    this.historyIndex = 0
+
     // build out editor
     // NOTE: textarea must be appended before CodeMirror is initalized, otherwise: bugs.
     root.appendChild(this.element)
@@ -47,15 +50,35 @@ export default class InlineCodeEditor {
       lineWrapping: true,
       matchBrackets: true,
       mode: mode,
-      theme: `material inline-code-editor ${theme}`
+      theme: `material inline-code-editor ${theme}`,
+      extraKeys: {
+        Enter: (cm) => {
+          // const input = this.editor.getValue()
+          // this.history.unshift( {
+          //   value: input, 
+          //   timestamp: Date.now()
+          // })
+          // this.historyIndex = 0
+          return CodeMirror.Pass;
+        }
+      }
     }
+
     if (mode === 'javascript') { options.lint = this.lintJavascript }
     
     this.editor = CodeMirror.fromTextArea(editorElement, options)
     this.editor.setSize('100%', height)
     this.enableCollapsibleGutters()
 
-    this.editor.on('changes', e => onChange(e) )
+    this.editor.on('changes', e => { 
+      const input = this.editor.getValue()
+      this.history.unshift( {
+        value: input, 
+        timestamp: Date.now()
+      })
+      this.historyIndex = 0
+      onChange(e) 
+    })
   }
 
   addOnRunSubscriber(subscriber) {
@@ -95,6 +118,10 @@ export default class InlineCodeEditor {
   
   getValue() {
     return this.editor.getValue()
+  }
+
+  getHistory() {
+    return this.history
   }
   
   getMode() {

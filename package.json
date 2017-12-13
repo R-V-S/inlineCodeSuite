@@ -13,8 +13,7 @@
   },
   "author": "R.V.S.",
   "license": "GPL-3.0",
-  "devDependencies": {},
-  "dependencies": {
+  "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
@@ -32,5 +31,8 @@
     "sass-loader": "^6.0.6",
     "uglify-js": "^2.8.29",
     "uglifyjs": "^2.4.11"
+  },
+  "dependencies": {
+    
   }
 }

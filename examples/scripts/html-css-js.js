@@ -136,4 +136,6 @@
     ],
     importScripts: ['scripts/importedScript.js']
   })
+  
+  // document.body.onkeypress = () => { console.log( example.getEditorData() ) }
 }

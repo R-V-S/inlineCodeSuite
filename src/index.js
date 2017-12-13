@@ -12,8 +12,6 @@ export default class InlineCodeSuite {
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
     this.importScripts = importScripts
 
-    this.version = '0.1.10'
-
     // TODO: consolidate all settings into this.settings object (currently only used by preview setting to avoid conflict with this.preview object)
     this.settings = { preview: preview }
     this.autoRun = autoRun
@@ -243,11 +241,15 @@ export default class InlineCodeSuite {
   }
 
   getEditorData() {
-    const editors = {}
+    const editorData = {}
     this.editors.forEach( editor => {
-      editors[editor.name] = Object.assign({}, editor, {userValue: editor.rendered.getValue(), rendered: null })
+      editorData[editor.name] = Object.assign({}, editor, {
+        userValue: editor.rendered.getValue(), 
+        history: editor.rendered.getHistory() 
+      })
+      delete editorData[editor.name].rendered
     })
-    return editors
+    return editorData
   }
   
   id() {
