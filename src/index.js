@@ -279,59 +279,59 @@ export default class InlineCodeSuite {
     this.elements.buttons.focus = []
     
     this.elements.buttonSection = this.createElement({ 
-        tag: 'section'
-      , classes: 'inlineCodeSuite-buttons'
-      , parent: this.elements.root
+        tag: 'section', 
+        classes: 'inlineCodeSuite-buttons', 
+        parent: this.elements.root
     })
 
     this.elements.focusButtonSection = this.createElement({ 
-        tag: 'section'
-      , classes: 'inlineCodeSuite-focus-buttons'
-      , parent: this.elements.buttonSection
+        tag: 'section', 
+        classes: 'inlineCodeSuite-focus-buttons', 
+        parent: this.elements.buttonSection
     })
 
     this.elements.outputButtonSection = this.createElement({ 
-        tag: 'section'
-      , classes: 'inlineCodeSuite-output-buttons'
-      , parent: this.elements.buttonSection
+        tag: 'section', 
+        classes: 'inlineCodeSuite-output-buttons', 
+        parent: this.elements.buttonSection
     })
     
     this.elements.editorSection = this.createElement({
-        tag: 'section'
-      , classes: 'inlineCodeSuite-editors'
-      , parent: this.elements.root
+        tag: 'section', 
+        classes: 'inlineCodeSuite-editors', 
+        parent: this.elements.root
     })
     
     this.elements.editorScroller = this.createElement({
-        tag: 'div'
-      , classes: 'inlineCodeSuite-editor-scroller'
-      , parent: this.elements.editorSection
-      , styles: {
-            height: this.height
-          , width: `${100 * editorCount}%`
+        tag: 'div', 
+        classes: 'inlineCodeSuite-editor-scroller', 
+        parent: this.elements.editorSection, 
+        styles: {
+          height: this.height, 
+          width: `${100 * editorCount}%`
         }
     })
 
     this.elements.outputSection = this.createElement({
-        tag: 'section'
-      , classes: 'inlineCodeSuite-output'
-      , parent: this.elements.root
+        tag: 'section', 
+        classes: 'inlineCodeSuite-output', 
+        parent: this.elements.root
     })
     
     this.elements.outputScroller = this.createElement({
-        tag: 'section'
-      , classes: 'inlineCodeSuite-output-scroller'
-      , parent: this.elements.outputSection
-      , styles: { 
-            height: this.height
-          , width: `200%` 
+        tag: 'section', 
+        classes: 'inlineCodeSuite-output-scroller', 
+        parent: this.elements.outputSection, 
+        styles: { 
+            height: this.height, 
+            width: `200%` 
         }
     })
 
     this.elements.runButtonSection = this.createElement({
-        tag: 'section'
-      , classes: 'inlineCodeSuite-buttons inlineCodeSuite-run-buttons'
-      , parent: this.elements.root
+        tag: 'section', 
+        classes: 'inlineCodeSuite-buttons inlineCodeSuite-run-buttons', 
+        parent: this.elements.root
     })
   }
   

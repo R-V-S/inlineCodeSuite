@@ -30,7 +30,7 @@ export default class InlineCodeCompiler {
           result = eval(message.data.code) 
           postMessage( JSON.stringify( {type: 'result', result: result, success: true, log: log} ) )
         } catch (e) {
-          log.push(e.message)
+          if ( !e.message.match(/document/) ) { log.push(e.message) }
           postMessage( JSON.stringify( {type: 'result', result: e.message, success: false, log: log, errorName: e.name} ) )
         }
         close()
@@ -74,7 +74,7 @@ export default class InlineCodeCompiler {
       let outputData = typeof compiledResult.data === 'string' ? JSON.parse(compiledResult.data) : compiledResult.data
       outputData = this.dispatchEvent('compilerDidRun', { code: code, importScripts: this.importScripts, logOnly: logOnly }) || outputData
       success = outputData.success
-      if (outputData.success) {
+      if (outputData.success || outputData.result.match(/document/) ) {
         danger = false 
       } else if( outputData.errorName.match(/reference|syntax/i) ) {
         danger = true
