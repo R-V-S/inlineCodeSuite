@@ -62,13 +62,13 @@
       {
         type: 'text/javascript',
         value: `
-describe("final round of tests", () => {
-it("should work", () => {
-  Test.assertEquals(add(-2,2), 0 , "Sum should be 0");
-  Test.assertEquals(add(10,1), 11 , "Sum should be 11");
-  Test.assertEquals(add(0,0), 0 , "Sum should be 0 again");
-});
-});          
+          describe("final round of tests", () => {
+          it("should work", () => {
+            Test.assertEquals(add(-2,2), 0 , "Sum should be 0");
+            Test.assertEquals(add(10,1), 11 , "Sum should be 11");
+            Test.assertEquals(add(0,0), 0 , "Sum should be 0 again");
+          });
+          });          
         `,
         runButton: 'Submit'
       }

@@ -95,6 +95,8 @@ Where version is the version number, minus the preceding `v`, e.g. `inline-code-
 
 ## Usage
 
+### Initialization 
+
 Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the class and pass it **an object** with the following properties:
 
 * `name`: A string that can be used to target this instance of `InlineCodeSuite`. Adds an id of `inlineCodeSuite-{name}` to the container element, where `{name}` is "slugified" ("Hello World!!" => "hello-world")
@@ -114,16 +116,35 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
   * `preserveBaseIndentation` (optional): A boolean that disables the default stripping of excess left-side indentation if set to `true`
   * `runButton` (optional): A string that defines the name of the button that will execute the code on click
   * `readOnly` (optional): A boolean that disables the ability to edit the editor's contents if set to `true`. They can still see and select/highlight/copy the content
+* `hasConsole` (optional): A boolean that determines whether or not there's a console tab. Defaults to `true` 
 * `importScripts` (optional): An array of strings declaring relative filenames. The compiler will import these files inside the script's execution context. You can use this to define dependencies or alter the context itself
 * `scripts` (optional): An array of objects. Each object declares a new non-editor script. Each script object accepts the following properties:
   * `type`: A string. A valid HTML `type` attribute like `text/javascript`
-  * `value`: A string. The script's code
+  * `value` (optional): A string. The script's code. This code will execute inside of a sandboxed environment, so it won't have access to the outer scope in which the inlineCodeSuite is created. It will have access to a variable, `inlineCodeSuite`, that contains editorData (see the FAQ for more details)
+  * `onRun` (optional): A callback function. This function will execute in the outer scope in which the inlineCodeSuite is created 
   * `runButton` (optional): A string that defines the name of the button that will execute the code on click
 * `preview` (optional): An object that defines preview settings, if a preview exists
   * `html` (optional): An object that can be used to add rendered HTML to the preview, if you want HTML code to appear in the preview but not in the HTML editor
     * `pre` (optional): HTML code to be added before the HTML editor code in the preview
     * `post` (optional): HTML code to be added after the HTML editor code in the preview
   * `styles` (optional): Additional styles added to the preview that are not visible to the user
+
+### Methods
+
+#### `.getEditorData()`
+
+Gets data about the editors, including their current content and history. Takes no parameters and returns an object. The object has a property for each editor. The editor's name is the key. The values are the same as the values that were set during initialization, plus two additional properties for each editor object:
+
+* `userValue`: The current value of the editor, as defined by the user's interactions
+* `history`: A stack of editor values, as defined by the user's interactions
+
+#### `setEditorContent({ name, content = '', preserveBaseIndentation, clearHistory = true })`
+
+Changes the content of an editor tab. Options should be passed in as an object, with the following properties:
+
+* `name`: A string. It must match the provided `name` property for the editor. If no match is found, nothing will happen.
+* `preserveBaseIndentation` (optional): A boolean. Preserves the base level of indentation of the string passed to it. Defaults to the editor's value (which itself defaults to `true`), if provided.
+* `clearHistory` (optional): A boolean. Clear's the editor's history, preventing undo actions from undoing the change to the editor's content.
 
 ## FAQ
 

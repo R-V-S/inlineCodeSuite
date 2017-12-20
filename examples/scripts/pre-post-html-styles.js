@@ -3,6 +3,7 @@
     name: 'pre-post-html-styles',
     root: document.querySelector('pre-post-html-styles'), 
     height: 200,
+    // hasConsole: false,
     editors: [
       {
         name: 'HTML',
@@ -10,6 +11,12 @@
         value: `<div class="test">This is content visible in the editor and modifed by hidden CSS.</div>`
       }
     ],
+    scripts: [
+    {
+      type: 'text/javascript',
+      runButton: 'Change Editor Content',
+      onRun: () => example.setEditorContent({ name: 'HTML', content: '<div class="test">This should be the new content for the HTML editor, set by an editor button.</div>' })
+    }],
     preview: {
       styles: `
         .test { background: hsl(187, 100%, 42%); color: white; padding: 1rem; margin: 0.5rem; }
@@ -20,5 +27,13 @@
         post: '<div>This is post-content HTML not visible in any editors.</div>'
       }
     }
+  })
+  example.setEditorContent({ 
+    name: 'HTML', 
+    content: `
+      <div class="test">
+        This is content visible in the editor and modifed by hidden CSS. 
+        It's also been set externally.
+      </div>` 
   })
 }

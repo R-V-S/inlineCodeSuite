@@ -6,14 +6,17 @@ import InlineCodeConsole from './components/InlineCodeConsole'
 import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
-  constructor ({ root, editors, scripts, preview, autoRun = true, name, height = '300px', importScripts }) {
+  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, name, height = '300px', importScripts }) {
     if (!root) { throw new Error('Root Element not found') }
     this.includeScripts = scripts ? scripts.filter( script => !script.runButton ) : []
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
     this.importScripts = importScripts
 
     // TODO: consolidate all settings into this.settings object (currently only used by preview setting to avoid conflict with this.preview object)
-    this.settings = { preview: preview }
+    this.settings = { 
+      preview: preview,
+      hasConsole: hasConsole
+    }
     this.autoRun = autoRun
     this.name = name
     this.editors = editors
@@ -56,7 +59,7 @@ export default class InlineCodeSuite {
     
     this.createOutputButtons()
 
-    if (!this.preview) { this.showConsole() }
+    if (!this.preview && this.settings.hasConsole) { this.showConsole() }
     
     this.updateOutput()
   }
@@ -109,12 +112,14 @@ export default class InlineCodeSuite {
   }
 
   createOutputButtons() {
-    this.consoleButton = document.createElement('button')
-    this.consoleButton.textContent = 'Console'
-    this.elements.outputButtonSection.appendChild(this.consoleButton)
-    
-    this.consoleButton.onclick = e => {
-      this.showConsole()
+    if (this.settings.hasConsole) {
+      this.consoleButton = document.createElement('button')
+      this.consoleButton.textContent = 'Console'
+      this.elements.outputButtonSection.appendChild(this.consoleButton)
+      
+      this.consoleButton.onclick = e => {
+        this.showConsole()
+      }
     }
 
     if (!this.preview) { return }
@@ -179,9 +184,14 @@ export default class InlineCodeSuite {
     this.elements.runButtonSection.appendChild(button)
     
     button.onclick = e => {
-      let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
-      let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + script.value
-      this.runScript({ script: mergedScript })
+      if (script.value) {
+        let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
+        let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + script.value
+        this.runScript({ script: mergedScript })
+      }
+      if (script.onRun && typeof script.onRun === 'function') {
+        script.onRun({ editorData: this.getEditorData() })
+      }
     }
     
     this.elements.buttons.focus.push(button)
@@ -218,7 +228,7 @@ export default class InlineCodeSuite {
     if (showErrors || compiled.success == true) {
       this.inlineCodeConsole.appendOutput( compiled.output )
     }
-    if (showConsole) { this.showConsole() }
+    if (showConsole && this.settings.hasConsole) { this.showConsole() }
 
     return compiled
   }
@@ -237,7 +247,7 @@ export default class InlineCodeSuite {
   stripIndentation(text) {
     if (!text) { return }
     const indentCount = Math.min( ...text.split('\n').map( line => line.match(/\S/) ? line.match(/(^\s*)(?=\S)/)[0].length : 100 ) )
-    return text.split('\n').map( line => line.substr(indentCount) ).join('\n')
+    return text.split('\n').map( line => line.substr(indentCount) ).join('\n').trim()
   }
 
   getEditorData() {
@@ -252,6 +262,19 @@ export default class InlineCodeSuite {
     return editorData
   }
   
+  setEditorContent({ name, content = '', preserveBaseIndentation, clearHistory = true }) {
+    const editor = this.editors.find( editor => name === editor.name)
+    if (!editor) { return }
+    // strip indentation, unless told otherwise. Allow this function's setting to override the editor's setting.
+    const reallyPreserveIndentation = preserveBaseIndentation ? true : (editor.preserveBaseIndentation || false)
+    const formattedContent = reallyPreserveIndentation ? content : this.stripIndentation(content)
+    editor.rendered.editor.setValue( formattedContent )
+    // clear the history
+    if (clearHistory) {
+      editor.rendered.editor.clearHistory()
+    }
+  }
+
   id() {
     return Math.random().toString(36).substr(2)
   }
