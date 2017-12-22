@@ -138,13 +138,57 @@ Gets data about the editors, including their current content and history. Takes 
 * `userValue`: The current value of the editor, as defined by the user's interactions
 * `history`: A stack of editor values, as defined by the user's interactions
 
-#### `setEditorContent({ name, content = '', preserveBaseIndentation, clearHistory = true })`
+#### `.setEditorContent(options)`
 
 Changes the content of an editor tab. Options should be passed in as an object, with the following properties:
 
-* `name`: A string. It must match the provided `name` property for the editor. If no match is found, nothing will happen.
-* `preserveBaseIndentation` (optional): A boolean. Preserves the base level of indentation of the string passed to it. Defaults to the editor's value (which itself defaults to `true`), if provided.
-* `clearHistory` (optional): A boolean. Clear's the editor's history, preventing undo actions from undoing the change to the editor's content.
+* `name`: A string. It must match the provided `name` property for the editor. If no match is found, nothing will happen
+* `preserveBaseIndentation` (optional): A boolean. Preserves the base level of indentation of the string passed to it. Defaults to the editor's value (which itself defaults to `true`), if provided
+* `clearHistory` (optional): A boolean. Clear's the editor's history, preventing undo actions from undoing the change to the editor's content
+
+#### `.addEventListener(type, callback)`
+
+Adds a callback function that's triggered based on specific events. Takes two arguments:
+
+* `type`: A string describing the type of event. Currently, only `compilerWillRun` and `compilerDidRun` are supported
+* `callback`: A callback function. It will be passed a data object with information about the code being executed and its output
+
+### Testing
+
+The inlineCodeSuite includes a rudimentary testing suite based on Jasmine. It supports `describe` and `it` methods, as well as the following matchers:
+
+* `toBe(real)`: Matches with strict equality (`===`)
+* `toBeCloseTo(expected, precision)`: Matches a number down to the specified precision (number of decimals)
+* `toBeDefined()`: Returns true if the result is not `undefined`
+* `toBeFalsy()`: Matches loosely to `false`
+* `toBeGreaterThan(expected)`: Matches if the result is greater than (`>`) a specified value
+* `toBeGreaterThanOrEqual(expected)`: Matches if the result is greater than or equal to(`>=`) a specified value
+* `toBeLessThan(expected)`: Matches if the result is less than (`<`) a specified value 
+* `toBeLessThanOrEqual(expected)`: Matches if the result is less than or equal to(`<=`) a specified value
+* `toBeNaN()`: Matches if the result is NaN (defined by `Number.isNaN()`)
+* `toBeNegativeInfinity()`: Matches if the result equals `-Infinity`
+* `toBeNull()`: Matches if the result does not strictly equal `null`
+* `toBePositiveInfinity()`: Matches if the result equals `Infinity`
+* `toBeTruthy()`: Matches loosely to `true`
+* `toBeUndefined()`: Matches if the result strictly equals `undefined`
+* `toEqual(expected)`: Does a loose and shallow match (note that Jasmine's `toEqual` does a deep comparison, while this does not)
+* `toMatch(regex)`: matches result against a given regex
+
+Here's an example of a simple `describe` block:
+
+```js
+describe("Your function for the final round", () => {
+  it("should add positive numbers", () => {
+    expect( add(10,1) ).toBe(11);
+  });
+  it("should add positive and negative numbers", () => {
+    expect( add(-2,2) ).toBe(0);
+  });
+  it("should add zero and zero", () => {
+    expect( add(0,0) ).toBe(0);
+  });
+});     
+```
 
 ## FAQ
 
