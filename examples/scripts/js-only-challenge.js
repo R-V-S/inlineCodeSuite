@@ -16,10 +16,12 @@
         name: 'Example Tests',
         mode: 'javascript',
         value: `
-          describe("Your function", () => {
-            it("should work", () => {
-              Test.assertEquals(add(2,2), 4 , "Sum should be 4");
-              Test.assertEquals(add(30,0), 30 , "Sum should be 30");
+          describe("Your function with example tests", () => {
+            it("should add two positive numbers", () => {
+              expect( add(2,2) ).toBe(4);
+            });
+            it("should add a positve number with zero", () => {
+              expect( add(30,0) ).toBe(30);
             });
           });
         `,
@@ -27,53 +29,32 @@
         runButton: 'TEST!'
       }
     ],
-    scripts: [
-      {
-        type: 'text/javascript',
-        value: `const describe = (subject, tests) => {
-          console.log(\`Testing \${subject.toLowerCase()}...\`)
-          tests()
-          console.log(\`\n\${Test.run} tests run. \${Test.failed} failed. \${Test.passed} passed.\`)
-          if (Test.failed === 0) { console.log('HUZZAH!!!') } else { console.log('FAIL.')}
-        };
-        
-        const it = (test, tests) => {
-          tests()
-          
-        }
-        
-        const Test = {
-          run: 0,
-          passed: 0,
-          failed: 0,
-          assertEquals: (actual, ideal, message) => {
-            Test.run++
-            if (actual === ideal) {
-              Test.passed++
-              console.log(\`Passed: \${message}\`)
-            } else {
-              Test.failed++
-              console.log(\`Failed: \${message}\`)
-            }
-          }
-        }
-        `
-      },
+    scripts: [     
       {
         type: 'text/javascript',
         value: `
-          describe("final round of tests", () => {
-          it("should work", () => {
-            Test.assertEquals(add(-2,2), 0 , "Sum should be 0");
-            Test.assertEquals(add(10,1), 11 , "Sum should be 11");
-            Test.assertEquals(add(0,0), 0 , "Sum should be 0 again");
-          });
+          describe("Your function for the final round", () => {
+            it("should add positive numbers", () => {
+              expect( add(10,1) ).toBe(11);
+            });
+            it("should add positive and negative numbers", () => {
+              expect( add(-2,2) ).toBe(0);
+            });
+            it("should add zero and zero", () => {
+              expect( add(0,0) ).toBe(0);
+            });
           });          
         `,
         runButton: 'Submit'
       }
     ]
   })
-  example.addEventListener('compilerWillRun', (data) => { console.log('compilerWillRun event!', data) } )
-  example.addEventListener('compilerDidRun', (data) => { console.log('compilerDidRun event!', data) } )
+  // example.addEventListener('compilerWillRun', (data) => { console.log('compilerWillRun event!', data) } )
+  example.addEventListener('compilerDidRun', (data) => { 
+    if (data.outputData.spec.run) {
+      const description = data.outputData.spec.description
+      const result = data.outputData.spec.passed ? 'passed!' : 'failed :/'
+      console.log( `A spec was run, and the spec ${result} \nThe spec was testing: ${description}`)
+    }
+  })
 }
