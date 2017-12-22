@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.6.0] - 2017-12-22
 ### Added
   - basic testing suite
   - `compilerDidMount` event
