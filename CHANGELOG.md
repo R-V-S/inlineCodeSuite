@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.6.2] - 2018-01-04
+### Fixed
+  - documentation on autoRun 
+  - console inherits code from a successful execution (note: only if no variables that are unknown in the scope of the compiler/worker are used, meaning it may not work as expected when the editor's JS uses the `document` object)
+
+## [0.6.1] - 2017-12-22
+### Fixed
+  - rebuilt 
+
 ## [0.6.0] - 2017-12-22
 ### Added
   - basic testing suite

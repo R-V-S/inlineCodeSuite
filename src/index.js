@@ -224,7 +224,7 @@ export default class InlineCodeSuite {
       logOnly: true,
       editorData: this.getEditorData()
     })
-    if (clear) { this.inlineCodeConsole.clear() }
+    if (clear) { this.inlineCodeConsole.clear({ starterScript: compiled.success ? script : '' }) }
     if (showErrors || compiled.success == true) {
       this.inlineCodeConsole.appendOutput( compiled.output )
     }

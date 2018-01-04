@@ -116,8 +116,8 @@ export default class InlineCodeConsole {
     
   }
 
-  clear() {
-    this.scriptInScope = ''
+  clear({ starterScript = ''}) {
+    this.scriptInScope = starterScript
     this.replaceOutput()
     this.codeConsole.setValue('')
   }
