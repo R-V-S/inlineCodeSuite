@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.3] - 2018-01-04
+### Fixed
+  - Fixed issue where incomplete tags in HTML tab were causing the script tags defined beneath them to show up
+
 ## [0.6.2] - 2018-01-04
 ### Fixed
   - documentation on autoRun 

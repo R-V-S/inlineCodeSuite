@@ -1,3 +1,9 @@
+/**
+ * Note: 
+ *   - Although technically incorrect, in this preview's source doc, the script tags are placed after the closing body tag to 
+ *     prevent them from appearing in the preview when an incomplete tag is added to the HTML editor tab.
+ */
+
 import './style.scss'
 
 export default class InlineCodePreview {
@@ -22,16 +28,19 @@ export default class InlineCodePreview {
         </head>
         <body>
           ${ content }
-          <script>
-            const console = { log: () => {} }; 
-            const inlineCodeSuite = { editorData: ${JSON.stringify(editorData)} };
-          </script>
-          ${ scripts.map( script => 
-            `<script type="${script.type}" ${script.src ? `src="${script.src}"` : ''}>
-              ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
-            </script>` )
-          .join('\n') }
         </body>
+
+        <script>
+          const console = { log: () => {} }; 
+          const inlineCodeSuite = { editorData: ${JSON.stringify(editorData)} };
+        </script>
+        
+        ${ scripts.map( script => 
+          `<script type="${script.type}" ${script.src ? `src="${script.src}"` : ''}>
+            ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
+          </script>` )
+          .join('\n') }
+
       </html>`
   }
   
