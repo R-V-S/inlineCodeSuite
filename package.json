@@ -8,6 +8,7 @@
     "start": "webpack-dev-server -d --open --config webpack.dev.js",
     "inline": "webpack-dev-server -d --inline --open --config webpack.dev.js",
     "watch": "webpack -p --watch --progress --config webpack.prod.js",
+    "version": "npm run build && git add -A dist",
     "build": "webpack -p --progress --config webpack.prod.js",
     "test": "test"
   },
