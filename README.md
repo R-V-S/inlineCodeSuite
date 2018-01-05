@@ -242,7 +242,17 @@ Or create a new HTML file and paste the following contents. This is a bare-minim
 
 ### Can I access the contents of editor tabs from within a script that's passed to InlineCodeSuite?
 
-Yes, scripts have access to a variable named `inlineCodeSuite`. That variable has a property, `editorData`. `inlineCodeSuite.editors` is an object containing editor data, and individual editors can be accessed by the name of the editor. In addition to the initial properties passed to the editor during creation (`name`, `mode`, `value`, `hasPreview`, `runButton`, and `preserveBaseIndentation`), each editor also has a `userValue` property that stores the current state of the editor's contents at compile time. For example, if you have an editor named `CSS`, you could access its current contents from your script through `inlineCodeSuite.editorData['CSS'].userValue`.
+Yes, scripts have access to a variable named `inlineCodeSuite`. That variable has a property, `editorData`. `inlineCodeSuite.editorData` is an object containing editor data, and individual editors can be accessed by the name of the editor. For example, to access the editor data for an editor named `JS`, use:
+
+```js
+inlineCodeSuite.editorData["JS"]
+```
+
+In addition to the initial properties passed to the editor during creation (`name`, `mode`, `value`, `hasPreview`, `runButton`, and `preserveBaseIndentation`), each editor also has a `userValue` property that stores the current state of the editor's contents at compile time. For example, if you have an editor named `CSS`, you could access its current contents from your script through: 
+
+```js
+inlineCodeSuite.editorData['CSS'].userValue
+```
 
 ### Can I access the contents of editor tabs from outside of InlineCodeSuite?
 
