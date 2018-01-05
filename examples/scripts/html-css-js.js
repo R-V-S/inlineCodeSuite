@@ -3,6 +3,7 @@
     name: 'html-css-js',
     root: document.querySelector('html-css-js'), 
     height: 400,
+    // useLocalStorage: false,
     editors: [
       {
         name: 'HTML',

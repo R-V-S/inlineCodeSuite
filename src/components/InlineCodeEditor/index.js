@@ -22,7 +22,7 @@ import 'codemirror/theme/material.css'
 import jshint from 'jshint'
 
 export default class InlineCodeEditor {
-  constructor ({ root, mode = 'javascript', theme = '', value = '', height, id, onChange = new Function, readOnly = false}) {
+  constructor ({ root, mode = 'javascript', theme = '', value = '', userValue = '', height, id, onChange = new Function, readOnly = false}) {
 
     // scaffold elements
     this.element = document.createElement('section')
@@ -35,10 +35,12 @@ export default class InlineCodeEditor {
     this.history = []
     this.historyIndex = 0
 
+    this.defaultValue = value
+
     // build out editor
     // NOTE: textarea must be appended before CodeMirror is initalized, otherwise: bugs.
     root.appendChild(this.element)
-    editorElement.value = value
+    editorElement.value = userValue
     
     let options = {
       autoCloseBrackets: true,
@@ -120,12 +122,25 @@ export default class InlineCodeEditor {
     return this.editor.getValue()
   }
 
+  setValue(value) {
+    this.editor.setValue(value)
+  }
+
   getHistory() {
     return this.history
   }
   
   getMode() {
     return this.editor.options.mode
+  }
+
+  reset({ value = this.defaultValue, clearHistory = true} = {}) {
+    this.setValue( value )
+    
+    // clear the history
+    if (clearHistory) {
+      this.editor.clearHistory()
+    }
   }
 }
 

@@ -103,6 +103,7 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
 * `root`: The DOM object that the code suite will be attached to
 * `height` (optional): A string that defines the height of the code suite. Defaults to `300px`
 * `autoRun` (optional): A boolean that defines whether the preview pane updates automatically when editor content changes. Defaults to `true`
+* `useLocalStorage` (optional): A boolean that determines whether or not editor content is stored and loaded from localStorage. Defaults to `true`
 * `editors`: An array of objects. Each object declares a new editor. Each editor object accepts the following properties:
   * `name`: The text that appears in the editor's tab
   * `mode`: A string that defines a valid scripting mode. Must be one of:
