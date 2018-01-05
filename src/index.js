@@ -275,6 +275,11 @@ export default class InlineCodeSuite {
     }
   }
 
+  setPreviewSettings(preview) {
+    this.settings.preview = preview
+    this.updatePreview()
+  }
+
   id() {
     return Math.random().toString(36).substr(2)
   }

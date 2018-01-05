@@ -15,7 +15,19 @@
     {
       type: 'text/javascript',
       runButton: 'Change Editor Content',
-      onRun: () => example.setEditorContent({ name: 'HTML', content: '<div class="test">This should be the new content for the HTML editor, set by an editor button.</div>' })
+      onRun: () => {
+        example.setEditorContent({ name: 'HTML', content: '<div class="test">This should be the new content for the HTML editor, set by an editor button.</div>' })
+        example.setPreviewSettings({
+          styles: `
+            .test { background: hsl(300, 100%, 62%); color: white; padding: 1rem; margin: 0.5rem; }
+            div { color: #555; margin: 0.5rem; background: #aaa; padding: 1rem; }
+          `,
+          html: {
+            pre: '<div>This is pre-content HTML just changed!!</div>',
+            post: '<div>This is post-content HTML not visible in any editors.</div>'
+          }    
+        })
+      }
     }],
     preview: {
       styles: `

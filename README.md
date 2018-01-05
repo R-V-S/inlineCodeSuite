@@ -144,7 +144,13 @@ Changes the content of an editor tab. Options should be passed in as an object, 
 
 * `name`: A string. It must match the provided `name` property for the editor. If no match is found, nothing will happen
 * `preserveBaseIndentation` (optional): A boolean. Preserves the base level of indentation of the string passed to it. Defaults to the editor's value (which itself defaults to `true`), if provided
-* `clearHistory` (optional): A boolean. Clear's the editor's history, preventing undo actions from undoing the change to the editor's content
+* `clearHistory` (optional): A boolean. Clears the editor's history, preventing undo actions from undoing the change to the editor's content
+
+#### `.setPreviewSettings(preview)`
+
+Changes the `preview` settings object, as outlined above. This is useful if you want to change pre- or post-HTML, or alter the styles dynamically after initialization.
+
+* `preview`: An object that defines preview settings, if a preview exists. 
 
 #### `.addEventListener(type, callback)`
 
