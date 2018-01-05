@@ -69,5 +69,14 @@
     button {
       float: right;
     }
+
+    .inlineCodeSuite-operation-buttons {
+      button {
+        float: left;
+        font-size: 1.5em;
+        opacity: 0.5;
+        padding: 0rem .66em;
+      }
+    }
   }
 }

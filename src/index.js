@@ -6,7 +6,7 @@ import InlineCodeConsole from './components/InlineCodeConsole'
 import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
-  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, name, height = '300px', importScripts }) {
+  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, useLocalStorage = true, name, height = '300px', importScripts }) {
     if (!root) { throw new Error('Root Element not found') }
     this.includeScripts = scripts ? scripts.filter( script => !script.runButton ) : []
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
@@ -19,7 +19,9 @@ export default class InlineCodeSuite {
     }
     this.autoRun = autoRun
     this.name = name
+    this.slug = `inlineCodeSuite-${this.slugify(name)}`
     this.editors = editors
+    this.useLocalStorage = useLocalStorage
 
     this.eventHandlers = {
       suiteInitialized: null,
@@ -35,9 +37,19 @@ export default class InlineCodeSuite {
     
     this.runScripts.forEach( script => this.createScriptRunButton({ script: script }) )
     
+    // get stored editor data
+    if (this.useLocalStorage && localStorage) {
+      this.storedEditorData = JSON.parse(localStorage.getItem(this.slug))
+      this.createRefreshButton()
+    }
+
     // create editors
-    for (let i in this.editors) {
-      this.renderEditor({ editor: this.editors[i], index: i })
+    for (let index in this.editors) {
+      // grab stored editor data, if it exists, for this particular editor. Default storedEditor to an empty object so that we can
+      // attempt to access properties to it without error (also it's type consistent).
+      const editor = this.editors[index]
+      const storedEditor = this.storedEditorData ? this.storedEditorData[ editor.name ] : {}
+      this.renderEditor({ editor, index, storedEditor })
     }
     
     this.activeId = this.editors[0].id
@@ -196,9 +208,30 @@ export default class InlineCodeSuite {
     
     this.elements.buttons.focus.push(button)
   }
-  
-  renderEditor({ editor, index }) {
+
+  createRefreshButton() {
+    let button = document.createElement('button')
+    button.textContent = '↺'
+    button.title = 'Reset editor content to default'
+    this.elements.operationButtonSection.appendChild(button)
+
+    button.onclick = e => {
+      this.editors.forEach( editor => editor.rendered.reset() )
+    }
+  }
+
+  /**
+   * @method renderEditor
+   * @param {editor} a raw editor initialization object
+   * @param {index} the index in the array of editors, so that its button can reference this editor's position
+   * @param {storedEditor}
+   * @returns undefined
+   */
+  renderEditor({ editor, index, storedEditor = {} }) {
     editor.id = this.id()
+
+    // Format the raw editor's value by removing any extraneous indentation
+    const formattedValue = editor.preserveBaseIndentation ? editor.value : this.stripIndentation(editor.value)
     
     this.createFocusButton({ editor: editor, index: index })
     if (editor.runButton) { this.createEditorRunButton({ editor: editor }) }
@@ -211,8 +244,12 @@ export default class InlineCodeSuite {
       height: this.height, 
       readOnly: editor.readOnly || false,
       theme: editor.theme, 
-      value: editor.preserveBaseIndentation ? editor.value : this.stripIndentation(editor.value), 
-      onChange: e => { if (this.autoRun) { this.updateOutput(e) } }
+      value: formattedValue, 
+      userValue: storedEditor.userValue || formattedValue,
+      onChange: e => { 
+        if (this.autoRun) { this.updateOutput(e) } 
+        if (this.useLocalStorage && localStorage) { localStorage.setItem(this.slug, JSON.stringify(this.getEditorData()) ) }
+      }
     })
     
     editor.rendered.element.style.width = `${100 / this.editors.length}%`
@@ -268,11 +305,7 @@ export default class InlineCodeSuite {
     // strip indentation, unless told otherwise. Allow this function's setting to override the editor's setting.
     const reallyPreserveIndentation = preserveBaseIndentation ? true : (editor.preserveBaseIndentation || false)
     const formattedContent = reallyPreserveIndentation ? content : this.stripIndentation(content)
-    editor.rendered.editor.setValue( formattedContent )
-    // clear the history
-    if (clearHistory) {
-      editor.rendered.editor.clearHistory()
-    }
+    editor.rendered.reset({ value: formattedContent, clearHistory })
   }
 
   setPreviewSettings(preview) {
@@ -299,31 +332,35 @@ export default class InlineCodeSuite {
     this.elements = {}
     this.elements.root = document.createElement('section')
     this.elements.root.classList.add('inlineCodeSuite')
-    if (this.name) { this.elements.root.setAttribute('id', `inlineCodeSuite-${this.slugify(this.name)}`) }
+    if (this.name) { this.elements.root.setAttribute('id', this.slug) }
     root.appendChild( this.elements.root )
     
     this.elements.buttons = {}
     this.elements.buttons.run = []
     this.elements.buttons.focus = []
     
+    // the button section is for general purpose buttons (like the run button), and user-defined buttons.
     this.elements.buttonSection = this.createElement({ 
         tag: 'section', 
         classes: 'inlineCodeSuite-buttons', 
         parent: this.elements.root
     })
 
+    // focus buttons are tab buttons that will display a specific editor. they go in the top left.
     this.elements.focusButtonSection = this.createElement({ 
         tag: 'section', 
         classes: 'inlineCodeSuite-focus-buttons', 
         parent: this.elements.buttonSection
     })
 
+    // create output button section for console, preview. they go in the top right.
     this.elements.outputButtonSection = this.createElement({ 
         tag: 'section', 
         classes: 'inlineCodeSuite-output-buttons', 
         parent: this.elements.buttonSection
     })
     
+    // create a container for the editors
     this.elements.editorSection = this.createElement({
         tag: 'section', 
         classes: 'inlineCodeSuite-editors', 
@@ -360,6 +397,13 @@ export default class InlineCodeSuite {
         tag: 'section', 
         classes: 'inlineCodeSuite-buttons inlineCodeSuite-run-buttons', 
         parent: this.elements.root
+    })
+
+    // the operation button section is for subtle, special purpose operations like "refresh". they go in the bottom left.
+    this.elements.operationButtonSection = this.createElement({ 
+      tag: 'section', 
+      classes: 'inlineCodeSuite-operation-buttons', 
+      parent: this.elements.runButtonSection
     })
   }
   
