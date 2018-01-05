@@ -87,14 +87,26 @@ export default class InlineCodeEditor {
 
   lintJavascript(text, options) {
     options.options = Object.assign({}, options.options,
-      { asi: true
-      , curly: true
-      , esversion: 6
-      , loopfunc: true
-      , shadow: 'outer'
-      , strict: 'implied'
-      , validthis: true
+      { asi: true, 
+        curly: true, 
+        esversion: 6, 
+        undef: false,
+        unused: false,
+        loopfunc: true, 
+        shadow: 'outer', 
+        strict: 'implied', 
+        validthis: true,
+        "-W117": true // this disables the 'undefined variables. the undef option doesn't appear to work at this time.
     })
+    options.globals = {
+      'describe': true,
+      'it': true,
+      'expect': true,
+      'document': true,
+      'console': true,
+      'inlineCodeSuite': true,
+      
+    }
     jshint.JSHINT(text, options.options, options.globals)
     return !jshint.JSHINT.data().errors ?
       [] :
