@@ -1,6 +1,6 @@
 {
   "name": "inline-code-suite",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Add dynamic, powerful inline code examples and challenges to your site",
   "main": "dist/inline-code-suite.js",
   "module": "dist/inline-code-suite.js",
