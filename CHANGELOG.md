@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-## [0.7.0] - 2018-01-5
+## [0.8.0] - 2018-01-5
+### Added
+  - Experimental fullscreen mode (documentation intentionally omitted for the time being – flying this one under the radar for now)
+
+## [0.7.1] - 2018-01-5
 ### Added
   - Ability to store current user content to LocalStorage, including:
     - A `useLocalStorage` setting, which defaults to `true`

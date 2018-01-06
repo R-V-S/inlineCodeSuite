@@ -3,6 +3,7 @@
     name: 'js-only-challenge',
     root: document.querySelector('js-only-challenge'), 
     height: 400,
+    enableFullscreen: true,
     editors: [
       {
         name: 'JS',

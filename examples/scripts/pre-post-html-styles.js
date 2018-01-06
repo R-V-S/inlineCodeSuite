@@ -4,6 +4,7 @@
     root: document.querySelector('pre-post-html-styles'), 
     height: 200,
     // hasConsole: false,
+    enableFullscreen: true,
     editors: [
       {
         name: 'HTML',
