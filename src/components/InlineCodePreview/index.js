@@ -14,7 +14,7 @@ export default class InlineCodePreview {
     this.element.classList.add('inline-code-preview')
     this.element.sandbox = 'allow-scripts'
     this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts, editorData: editorData })
-    this.element.style.height = height
+    this.element.style.height = this.height = height
     root.appendChild( this.element )
   }
   
@@ -42,6 +42,14 @@ export default class InlineCodePreview {
           .join('\n') }
 
       </html>`
+  }
+
+  setFullscreen(isEnabled) {
+    if (isEnabled) {
+      this.element.style.height = 'calc(100vh - 65px)'
+    } else {
+      this.element.style.height = this.height
+    }
   }
   
   update({ scripts, stylesheets, content, editorData }) { 

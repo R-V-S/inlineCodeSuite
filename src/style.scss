@@ -1,6 +1,22 @@
 .inlineCodeSuite {
   box-shadow: 2px 2px 2px hsla(0,0%,60%,0.1);
   margin: 1rem;
+  background: white;
+
+  &.fullscreen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 950;
+    margin: 0;
+
+    .inlineCodeSuite-editor-scroller,
+    .inlineCodeSuite-output-scroller {
+      height: 100vh;
+    }  
+  }
 
   .inlineCodeSuite-editors,
   .inlineCodeSuite-output {
@@ -74,6 +90,7 @@
       button {
         float: left;
         font-size: 1.5em;
+        line-height: 2rem;
         opacity: 0.5;
         padding: 0rem .66em;
       }

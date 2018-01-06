@@ -4,6 +4,7 @@
     root: document.querySelector('html-css-js'), 
     height: 400,
     // useLocalStorage: false,
+    enableFullscreen: true,
     editors: [
       {
         name: 'HTML',

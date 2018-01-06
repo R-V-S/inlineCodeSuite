@@ -22,7 +22,7 @@ export default class InlineCodeConsole {
 
     this.element = document.createElement('section')
     this.element.classList.add('inlineCodeSuite-console')
-    this.element.style.height = height
+    this.element.style.height = this.height = height
 
     this.history = []
     this.historyIndex = 0
@@ -62,6 +62,7 @@ export default class InlineCodeConsole {
       extraKeys: {
         Enter: async (cm) => {
           const input = this.codeConsole.getValue()
+          if (!input) { return }
           if (input == 'clear') {
             this.clear()
             return
@@ -116,7 +117,7 @@ export default class InlineCodeConsole {
     
   }
 
-  clear({ starterScript = ''}) {
+  clear({ starterScript = ''} = {}) {
     this.scriptInScope = starterScript
     this.replaceOutput()
     this.codeConsole.setValue('')
@@ -132,6 +133,14 @@ export default class InlineCodeConsole {
 
   scrollToBottom() {
     setTimeout( () => this.element.scrollTop = this.element.scrollHeight, 100)
+  }
+
+  setFullscreen(isEnabled) {
+    if (isEnabled) {
+      this.element.style.height = 'calc(100vh - 65px)'
+    } else {
+      this.element.style.height = this.height
+    }
   }
 }
 

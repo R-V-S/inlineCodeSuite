@@ -6,7 +6,7 @@ import InlineCodeConsole from './components/InlineCodeConsole'
 import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
-  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, useLocalStorage = true, name, height = '300px', importScripts }) {
+  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, useLocalStorage = true, enableFullscreen = false, name, height = '300px', importScripts }) {
     if (!root) { throw new Error('Root Element not found') }
     this.includeScripts = scripts ? scripts.filter( script => !script.runButton ) : []
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
@@ -14,14 +14,16 @@ export default class InlineCodeSuite {
 
     // TODO: consolidate all settings into this.settings object (currently only used by preview setting to avoid conflict with this.preview object)
     this.settings = { 
-      preview: preview,
-      hasConsole: hasConsole
+      preview,
+      hasConsole,
+      autoRun,
+      name,
+      slug: name ? `inlineCodeSuite-${this.slugify(name)}` : '',
+      useLocalStorage,
+      enableFullscreen
     }
-    this.autoRun = autoRun
-    this.name = name
-    this.slug = `inlineCodeSuite-${this.slugify(name)}`
+
     this.editors = editors
-    this.useLocalStorage = useLocalStorage
 
     this.eventHandlers = {
       suiteInitialized: null,
@@ -38,9 +40,13 @@ export default class InlineCodeSuite {
     this.runScripts.forEach( script => this.createScriptRunButton({ script: script }) )
     
     // get stored editor data
-    if (this.useLocalStorage && localStorage) {
-      this.storedEditorData = JSON.parse(localStorage.getItem(this.slug))
+    if (this.settings.useLocalStorage && this.settings.slug && localStorage) {
+      this.storedEditorData = JSON.parse(localStorage.getItem(this.settings.slug))
       this.createRefreshButton()
+    }
+
+    if (this.settings.enableFullscreen) {
+      this.createFullscreenButton()
     }
 
     // create editors
@@ -209,6 +215,29 @@ export default class InlineCodeSuite {
     this.elements.buttons.focus.push(button)
   }
 
+  createFullscreenButton() {
+    let button = document.createElement('button')
+    button.textContent = '↖'
+    button.title = 'Toggle fullscreen mode'
+    this.elements.operationButtonSection.appendChild(button)
+
+    button.onclick = e => {
+      this.settings.inFullscreenMode = this.settings.inFullscreenMode ? false : true
+      this.elements.root.classList.toggle('fullscreen')
+      if (this.settings.inFullscreenMode == true) {
+        this.editors.forEach( editor => editor.rendered.setFullscreen(true) )
+        this.preview.setFullscreen(true)
+        this.inlineCodeConsole.setFullscreen(true)
+        this.elements.editorScroller.style['height'] = this.elements.outputScroller.style['height'] = 'calc(100vh - 65px)'
+      } else {
+        this.editors.forEach( editor => editor.rendered.setFullscreen(false) )
+        this.preview.setFullscreen(false)
+        this.inlineCodeConsole.setFullscreen(false)
+        this.elements.editorScroller.style['height'] = this.elements.outputScroller.style['height'] = this.height
+      }
+    }
+  }
+
   createRefreshButton() {
     let button = document.createElement('button')
     button.textContent = '↺'
@@ -247,8 +276,8 @@ export default class InlineCodeSuite {
       value: formattedValue, 
       userValue: storedEditor.userValue || formattedValue,
       onChange: e => { 
-        if (this.autoRun) { this.updateOutput(e) } 
-        if (this.useLocalStorage && localStorage) { localStorage.setItem(this.slug, JSON.stringify(this.getEditorData()) ) }
+        if (this.settings.autoRun) { this.updateOutput(e) } 
+        if (this.settings.useLocalStorage && localStorage) { localStorage.setItem(this.settings.slug, JSON.stringify(this.getEditorData()) ) }
       }
     })
     
@@ -332,7 +361,7 @@ export default class InlineCodeSuite {
     this.elements = {}
     this.elements.root = document.createElement('section')
     this.elements.root.classList.add('inlineCodeSuite')
-    if (this.name) { this.elements.root.setAttribute('id', this.slug) }
+    if (this.settings.name) { this.elements.root.setAttribute('id', this.settings.slug) }
     root.appendChild( this.elements.root )
     
     this.elements.buttons = {}

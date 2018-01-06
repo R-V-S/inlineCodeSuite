@@ -37,6 +37,8 @@ export default class InlineCodeEditor {
 
     this.defaultValue = value
 
+    this.height = height
+
     // build out editor
     // NOTE: textarea must be appended before CodeMirror is initalized, otherwise: bugs.
     root.appendChild(this.element)
@@ -152,6 +154,14 @@ export default class InlineCodeEditor {
     // clear the history
     if (clearHistory) {
       this.editor.clearHistory()
+    }
+  }
+
+  setFullscreen(isEnabled) {
+    if (isEnabled) {
+      this.editor.setSize('100%', 'calc(100vh - 65px)')
+    } else {
+      this.editor.setSize('100%', this.height)
     }
   }
 }
