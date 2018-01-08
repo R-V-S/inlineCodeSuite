@@ -6,21 +6,23 @@ import InlineCodeConsole from './components/InlineCodeConsole'
 import InlineCodeCompiler from './components/InlineCodeCompiler'
 
 export default class InlineCodeSuite {
-  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, useLocalStorage = true, enableFullscreen = false, name, height = '300px', importScripts }) {
+  constructor ({ root, editors, scripts, hasConsole = true, preview, autoRun = true, autoPreview = true, useLocalStorage = true, enableFullscreen = false, recording = false, name, height = '300px', importScripts }) {
     if (!root) { throw new Error('Root Element not found') }
     this.includeScripts = scripts ? scripts.filter( script => !script.runButton ) : []
     this.runScripts = scripts ? scripts.filter( script => script.runButton ) : []
     this.importScripts = importScripts
 
-    // TODO: consolidate all settings into this.settings object (currently only used by preview setting to avoid conflict with this.preview object)
     this.settings = { 
-      preview,
-      hasConsole,
       autoRun,
+      autoPreview,
+      enableFullscreen,
+      recording,
+      hasConsole,
+      height: Number.isInteger(height) ? `${height}px` : height,
       name,
+      preview,
       slug: name ? `inlineCodeSuite-${this.slugify(name)}` : '',
-      useLocalStorage,
-      enableFullscreen
+      useLocalStorage
     }
 
     this.editors = editors
@@ -33,9 +35,8 @@ export default class InlineCodeSuite {
       previewDidUpdate: null
     }
     
-    this.height = Number.isInteger(height) ? `${height}px` : height
-    
     this.scaffoldElements({ root: root, editorCount: this.editors.length })
+    this.addDependencies()
     
     this.runScripts.forEach( script => this.createScriptRunButton({ script: script }) )
     
@@ -60,18 +61,16 @@ export default class InlineCodeSuite {
     
     this.activeId = this.editors[0].id
     this.activeFocusButton().classList.add('active')
-    
-    this.inlineCodeConsole = new InlineCodeConsole({
-      dispatchEvent: (...params) => this.dispatchEvent(...params),
-      height: this.height,
-      root: this.elements.outputScroller
-    })
 
     this.compiler = new InlineCodeCompiler({ 
       dispatchEvent: (...params) => this.dispatchEvent(...params),
-      inlineCodeConsole: this.inlineCodeConsole, 
+      inlineCodeConsole: this.console, 
       importScripts: this.importScripts
     })
+
+    if (this.settings.hasConsole) {
+      this.createConsole()
+    }
     
     this.createPreview()
     
@@ -80,6 +79,16 @@ export default class InlineCodeSuite {
     if (!this.preview && this.settings.hasConsole) { this.showConsole() }
     
     this.updateOutput()
+  }
+
+  addDependencies() {
+    const iconLink = document.createElement('link')
+    iconLink.href = 'https://fonts.googleapis.com/icon?family=Material+Icons'
+    iconLink.rel = 'stylesheet'
+    iconLink.onload = () => {
+      this.elements.root.classList.add('icons-loaded')
+    }
+    this.elements.root.appendChild(iconLink)
   }
 
   addEventListener(type, callback) {
@@ -156,11 +165,16 @@ export default class InlineCodeSuite {
     this.preview = new InlineCodePreview({ 
       content: this.content(this.editors), 
       editorData: this.getEditorData(),
-      height: this.height, 
+      height: this.settings.height, 
       root: this.elements.outputScroller, 
       scripts: this.mergedScripts(this.editors, this.includeScripts), 
       stylesheets: this.stylesheets(this.editors), 
-      settings: this.settings.preview
+      settings: this.settings.preview,
+      onError: (e) => {
+        if (this.console) {
+          this.console.appendOutput(e)
+        }
+      }
     })
   }
 
@@ -179,6 +193,22 @@ export default class InlineCodeSuite {
     this.elements.outputScroller.style.transform = `translateX(-50%)`
     this.previewButton.classList.add('active')
     this.consoleButton.classList.remove('active')
+  }
+
+  async createConsole() {
+    this.console = new InlineCodeConsole({
+      height: this.settings.height,
+      root: this.elements.outputScroller,
+      compiler: this.compiler,
+      compile: async ({code}) => {
+        return this.compiler.compile({
+          code,
+          mode: 'console',
+          forceReturn: true,
+          editorData: this.getEditorData()
+        })
+      }
+    })
   }
   
   createEditorRunButton({ editor }) {
@@ -217,7 +247,7 @@ export default class InlineCodeSuite {
 
   createFullscreenButton() {
     let button = document.createElement('button')
-    button.textContent = '↖'
+    button.innerHTML = '<i class="material-icons">fullscreen</i>'
     button.title = 'Toggle fullscreen mode'
     this.elements.operationButtonSection.appendChild(button)
 
@@ -227,20 +257,22 @@ export default class InlineCodeSuite {
       if (this.settings.inFullscreenMode == true) {
         this.editors.forEach( editor => editor.rendered.setFullscreen(true) )
         this.preview.setFullscreen(true)
-        this.inlineCodeConsole.setFullscreen(true)
+        this.console.setFullscreen(true)
         this.elements.editorScroller.style['height'] = this.elements.outputScroller.style['height'] = 'calc(100vh - 65px)'
+        button.innerHTML = '<i class="material-icons">fullscreen_exit</i>'
       } else {
         this.editors.forEach( editor => editor.rendered.setFullscreen(false) )
         this.preview.setFullscreen(false)
-        this.inlineCodeConsole.setFullscreen(false)
-        this.elements.editorScroller.style['height'] = this.elements.outputScroller.style['height'] = this.height
+        this.console.setFullscreen(false)
+        this.elements.editorScroller.style['height'] = this.elements.outputScroller.style['height'] = this.settings.height
+        button.innerHTML = '<i class="material-icons">fullscreen</i>'
       }
     }
   }
 
   createRefreshButton() {
     let button = document.createElement('button')
-    button.textContent = '↺'
+    button.innerHTML = '<i class="material-icons">refresh</i>'
     button.title = 'Reset editor content to default'
     this.elements.operationButtonSection.appendChild(button)
 
@@ -270,13 +302,14 @@ export default class InlineCodeSuite {
       mode: editor.mode, 
       name: editor.name, 
       id: editor.id , 
-      height: this.height, 
+      height: this.settings.height, 
       readOnly: editor.readOnly || false,
       theme: editor.theme, 
       value: formattedValue, 
       userValue: storedEditor.userValue || formattedValue,
       onChange: e => { 
         if (this.settings.autoRun) { this.updateOutput(e) } 
+        else if (this.settings.autoPreview && editor.mode.match(/^(html|css)/i) ) { this.updatePreview() }
         if (this.settings.useLocalStorage && localStorage) { localStorage.setItem(this.settings.slug, JSON.stringify(this.getEditorData()) ) }
       }
     })
@@ -284,15 +317,16 @@ export default class InlineCodeSuite {
     editor.rendered.element.style.width = `${100 / this.editors.length}%`
   }
 
-  async runScript({ script: script, clear = true, showConsole = true, showErrors = true }) {
+  async runScript({ script, clear = true, showConsole = true, showErrors = true }) {
     let compiled = await this.compiler.compile({
       code: script,
       logOnly: true,
       editorData: this.getEditorData()
     })
-    if (clear) { this.inlineCodeConsole.clear({ starterScript: compiled.success ? script : '' }) }
+
+    if (clear) { this.console.clear({ starterScript: compiled.success ? script : '' }) }
     if (showErrors || compiled.success == true) {
-      this.inlineCodeConsole.appendOutput( compiled.output )
+      this.console.appendOutput( compiled.output )
     }
     if (showConsole && this.settings.hasConsole) { this.showConsole() }
 
@@ -304,7 +338,7 @@ export default class InlineCodeSuite {
     let output = false
     await this.editors.forEach( async editor => {
       if( validScriptTypes.includes( editor.rendered.getMode() ) && editor.hasPreview !== false ) { 
-        output = await this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false, showErrors: false })
+        output = await this.runScript({ script: editor.rendered.getValue(), clear: false, showConsole: false, showErrors: true })
       }
     })
     return output
@@ -401,7 +435,7 @@ export default class InlineCodeSuite {
         classes: 'inlineCodeSuite-editor-scroller', 
         parent: this.elements.editorSection, 
         styles: {
-          height: this.height, 
+          height: this.settings.height, 
           width: `${100 * editorCount}%`
         }
     })
@@ -417,7 +451,7 @@ export default class InlineCodeSuite {
         classes: 'inlineCodeSuite-output-scroller', 
         parent: this.elements.outputSection, 
         styles: { 
-            height: this.height, 
+            height: this.settings.height, 
             width: `200%` 
         }
     })
@@ -481,11 +515,12 @@ export default class InlineCodeSuite {
   }
   
   async updateOutput(e) {
-    this.runEditorScripts()
     if (this.preview) {
       this.updatePreview()
+    } else {
+      this.runEditorScripts()
     }
-    this.inlineCodeConsole.scrollToBottom()
+    this.console.scrollToBottom()
   }
 }
 

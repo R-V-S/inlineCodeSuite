@@ -1,30 +1,32 @@
 export default class InlineCodeCompiler {
-  constructor({inlineCodeConsole, dispatchEvent, importScripts = [], mode = 'script'} = {},) {
-    this.inlineCodeConsole = inlineCodeConsole
+  constructor({dispatchEvent, importScripts = [] }) {
     this.dispatchEvent = dispatchEvent
     this.importScripts = importScripts.map( script => `${location.protocol}//${location.host}/${location.pathname}/${script}`)
-    this.mode = mode
   }
 
-  createWorker({ editorData }) {
+  createWorker({ editorData = {}, mode }) {
     const template = `
       const inlineCodeSuite = {
-        mode: '${this.mode}',
+        mode: '${mode}',
         editorData: ${JSON.stringify(editorData)}
       }
+
       
       let log = []
       const console = { 
-        log: (...msgs) => { log.push(...msgs); return undefined },
-        warn: (...msgs) => { log.push( ...msgs.map( msg => 'WARNING: ' + msg ) ); return undefined },
-        error: (...msgs) => { log.push( ...msgs.map( msg => 'ERROR: ' + msg ) ); return undefined },
+        log: (...msgs) => { log.push(...msgs); return inlineCodeSuite.mode === 'console' ? 'Sorry, the console does not log to the console. No' : undefined },
+        warn: (...msgs) => { log.push( ...msgs.map( msg => 'WARNING: ' + msg ) ); return inlineCodeSuite.mode === 'console' ? 'Sorry, the console does not log to the console. No' : undefined },
+        error: (...msgs) => { log.push( ...msgs.map( msg => 'ERROR: ' + msg ) ); return inlineCodeSuite.mode === 'console' ? 'Sorry, the console does not log to the console. No' : undefined },
       }
-
+      
       const alert = msg => { 
-        log.push( 'Grumpy cat says NO to alerts' )
-        if (inlineCodeSuite.mode === 'console') { throw 'Grumpy cat says NO to alerts!' }
+        log.push( "Sorry, alerts are not allowed" )
+        if (inlineCodeSuite.mode === 'console') { throw { message: "Sorry, alerts are not allowed!", name: 'internal error'} }
       }
-
+      
+      // black hole
+      const document = new Proxy(() => {}, { get: () => document, apply: () => document })
+      
       const ICS_Spec = {
         reset: function() {
           this.counts = {
@@ -113,7 +115,7 @@ export default class InlineCodeCompiler {
           result = eval(message.data.code) 
           postMessage( JSON.stringify( {type: 'result', result: result, success: true, log: log, spec: ICS_Spec} ) )
         } catch (e) {
-          if ( !e.message.match(/document/) ) { log.push(e.message) }
+          log.push(e.name+': '+e.message)
           postMessage( JSON.stringify( {type: 'result', result: e.message, success: false, log: log, errorName: e.name, spec: ICS_Spec} ) )
         }
         close()
@@ -126,11 +128,11 @@ export default class InlineCodeCompiler {
     return worker
   }
 
-  async compile({code, logOnly = false, editorData}) {
+  async compile({code, logOnly = false, editorData = {}, mode = 'script' }) {
     code = this.dispatchEvent('compilerWillRun', { code: code, importScripts: this.importScripts, logOnly: logOnly }) || code
     let outputString, log = [], success = false, danger = true
     try {
-      const worker = this.createWorker({ editorData })
+      const worker = this.createWorker({ editorData, mode })
       
       const compiledResult = await new Promise( (resolve, reject) => {
         let timeout
@@ -157,12 +159,12 @@ export default class InlineCodeCompiler {
       let outputData = typeof compiledResult.data === 'string' ? JSON.parse(compiledResult.data) : compiledResult.data
       outputData = this.dispatchEvent('compilerDidRun', { code, importScripts: this.importScripts, logOnly, outputData }) || outputData
       success = outputData.success
-      if (outputData.success || outputData.result.match(/document/) ) {
+      if (outputData.success ) {
         danger = false 
-      } else if( outputData.errorName.match(/reference|syntax/i) ) {
+      } else if (outputData.errorName.match(/reference|syntax/i) ) {
         danger = true
       } 
-      outputString = (this.mode === 'script' ? outputData.log.join('\n') : '' ) + (logOnly ? '' : outputData.result)
+      outputString = (mode === 'script' ? outputData.log.join('\n') : '' ) + (logOnly ? '' : outputData.result)
     } catch(e) {
       outputString = e.message
       success = false

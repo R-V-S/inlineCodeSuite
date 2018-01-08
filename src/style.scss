@@ -89,11 +89,23 @@
     .inlineCodeSuite-operation-buttons {
       button {
         float: left;
-        font-size: 1.5em;
+        font-size: 2em;
         line-height: 2rem;
         opacity: 0.5;
         padding: 0rem .66em;
       }
     }
+  }
+
+  .material-icons {
+    transition: opacity 0.8s ease;
+  }
+
+  &:not(.icons-loaded) .material-icons {
+    opacity: 0;
+    width: 0%;
+  }
+  &.icons-loaded .material-icons {
+    opacity: 1;
   }
 }

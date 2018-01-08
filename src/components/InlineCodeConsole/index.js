@@ -9,16 +9,11 @@ import 'codemirror/addon/display/autorefresh'
 import InlineCodeCompiler from './../InlineCodeCompiler'
 
 export default class InlineCodeConsole {
-  constructor({ root, baseOutput = '// Console', theme = '', height = '300px', dispatchEvent }) {
+  constructor({ root, baseOutput = '// Console', theme = '', height = '300px', compile }) {
     
     this.baseOutput = baseOutput
 
-    this.dispatchEvent = dispatchEvent    
-    this.compiler = new InlineCodeCompiler({ 
-      console: this, 
-      dispatchEvent: (...params) => this.dispatchEvent(...params),
-      mode: 'console'
-    })
+    this.compile = compile 
 
     this.element = document.createElement('section')
     this.element.classList.add('inlineCodeSuite-console')
@@ -67,10 +62,7 @@ export default class InlineCodeConsole {
             this.clear()
             return
           }
-          const compiled = await this.compiler.compile({
-            code: this.scriptInScope + input + "\n",
-            forceReturn: true
-          })
+          const compiled = await this.compile({ code: this.scriptInScope + input + "\n" })
           if (!compiled.output) {
             return
           }

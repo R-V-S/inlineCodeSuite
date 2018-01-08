@@ -1,12 +1,32 @@
 # Changelog
 
-## [Unreleased]
+## [0.9.0] - 2018-01-08
+### Added
+  - Various keyboard shortcuts 
+  - Support for multiple cursors
+  - `autoPreview` option to allow HTML & CSS changes to automatically update the preview even when `autoRun` is set to `false`
+  - Material Icons
 
-## [0.8.0] - 2018-01-5
+### Changed
+  - Refactored inlineCodeConsole so that it uses the existing compiler
+  - Refactored preview so that it catches errors and displays them in the inline console
+  - Less funny console responses to attempted alerts or console logs
+  - Slightly more verbose error messages
+  - Refactored top-level settings so that they're consolidated under one settings object
+
+### Fixed
+  - Fixed issue where alerts in the console would return a message about a failed match
+  - Fixed issue where using document object would cause either the script or the console to report errors (or fail silently). This replaces a short term fix that suppressed any document-related errors (along with subsequent errors).
+
+### Known Issues
+  - Logging the document object from a script tab logs nothing (document is now a black hole/trap in the compiler)
+  - Displaying line numbers in errors is problematic because the scripts are merged together before compiling
+
+## [0.8.0] - 2018-01-05
 ### Added
   - Experimental fullscreen mode (documentation intentionally omitted for the time being – flying this one under the radar for now)
 
-## [0.7.1] - 2018-01-5
+## [0.7.1] - 2018-01-05
 ### Added
   - Ability to store current user content to LocalStorage, including:
     - A `useLocalStorage` setting, which defaults to `true`

@@ -8,8 +8,10 @@ import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/jsx/jsx'
 import 'codemirror/mode/ruby/ruby'
 import 'codemirror/mode/xml/xml'
+import 'codemirror/keymap/sublime.js'
 import 'codemirror/addon/lint/lint.js'
 import 'codemirror/addon/lint/lint.css'
+import 'codemirror/addon/comment/comment.js'
 import 'codemirror/addon/display/autorefresh.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/edit/matchbrackets.js'
@@ -49,22 +51,20 @@ export default class InlineCodeEditor {
       autoRefresh: true,
       foldGutter: true,
       gutters: ['CodeMirror-lint-markers', 'CodeMirror-foldgutter'],
+      keyMap: 'sublime',
       lineNumbers: true,
-      readOnly: readOnly ? 'nocursor' : false,
       lineWrapping: true,
       matchBrackets: true,
       mode: mode,
       theme: `material inline-code-editor ${theme}`,
+      readOnly: readOnly ? 'nocursor' : false,
       extraKeys: {
         Enter: (cm) => {
-          // const input = this.editor.getValue()
-          // this.history.unshift( {
-          //   value: input, 
-          //   timestamp: Date.now()
-          // })
-          // this.historyIndex = 0
+          // this does nothing. placeholder for future use
           return CodeMirror.Pass;
-        }
+        },
+        'Alt-Up': "swapLineUp",
+        'Alt-Down': "swapLineDown",
       }
     }
 

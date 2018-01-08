@@ -102,7 +102,8 @@ Once including/imported/required, `InlineCodeSuite` is a class. Instantiate the 
 * `name`: A string that can be used to target this instance of `InlineCodeSuite`. Adds an id of `inlineCodeSuite-{name}` to the container element, where `{name}` is "slugified" ("Hello World!!" => "hello-world")
 * `root`: The DOM object that the code suite will be attached to
 * `height` (optional): A string that defines the height of the code suite. Defaults to `300px`
-* `autoRun` (optional): A boolean that defines whether the preview pane updates automatically when editor content changes. Defaults to `true`
+* `autoRun` (optional): A boolean that defines whether code automatically runs when editor content changes. This is applies to all editor types, including HTML and CSS editor tabs. Defaults to `true`
+* `autoPreview` (optional): A boolean that defines whether the preview pane updates automatically when HTML and CSS editor tab content changes. Defaults to `true`. Use this if `autoRun` is set to `false` to prevent script tabs from auto-running, but you still want the preview to update automatically when HTML and CSS changes are made
 * `useLocalStorage` (optional): A boolean that determines whether or not editor content is stored and loaded from localStorage. Defaults to `true`
 * `editors`: An array of objects. Each object declares a new editor. Each editor object accepts the following properties:
   * `name`: The text that appears in the editor's tab

@@ -5,6 +5,8 @@
     height: 400,
     // useLocalStorage: false,
     enableFullscreen: true,
+    // autoRun: false,
+    autoPreview: true,
     editors: [
       {
         name: 'HTML',

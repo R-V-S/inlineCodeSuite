@@ -7,18 +7,49 @@
 import './style.scss'
 
 export default class InlineCodePreview {
-  constructor({ root, scripts, stylesheets, content, height, settings, editorData }) {
+  constructor({ root, scripts, stylesheets, content, height, settings, editorData, onError }) {
     this.settings = settings
+    this.scripts = scripts
+    this.editorData = editorData
+    this.onError = onError
 
     this.element = document.createElement('iframe')
+    this.addScripts()
     this.element.classList.add('inline-code-preview')
-    this.element.sandbox = 'allow-scripts'
+    this.element.sandbox = 'allow-scripts allow-same-origin'
     this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts, editorData: editorData })
     this.element.style.height = this.height = height
     root.appendChild( this.element )
   }
+
+  addScripts() {
+    this.element.onload = () => {
+      const contentWindow = this.element.contentWindow
+      contentWindow.reportError = (e) => {
+        console.log('reporting error...', e)
+        this.onError(e)
+      }
+      const blackHole = new Proxy(() => {}, { get: () => blackHole, apply: () => blackHole} )
+      contentWindow.console = blackHole
+      contentWindow.inlineCodeSuite = { editorData: this.editorData }
+      
+      this.scripts.map( script => {
+        const el = contentWindow.document.createElement('script')
+        el.async = false
+        el.type = script.type
+        if (script.src) { el.src = script.src }
+        el.text = `
+          try {
+            ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
+          } catch (e) {
+              window.reportError(e)
+          }`
+        contentWindow.document.querySelector('script-area').appendChild(el)
+      })
+    }
+  }
   
-  generateSrcDoc({ content, stylesheets, scripts, editorData }) {
+  generateSrcDoc({ content, stylesheets }) {
     return `
       <!doctype html>
       <html>
@@ -30,16 +61,7 @@ export default class InlineCodePreview {
           ${ content }
         </body>
 
-        <script>
-          const console = { log: () => {} }; 
-          const inlineCodeSuite = { editorData: ${JSON.stringify(editorData)} };
-        </script>
-        
-        ${ scripts.map( script => 
-          `<script type="${script.type}" ${script.src ? `src="${script.src}"` : ''}>
-            ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
-          </script>` )
-          .join('\n') }
+        <script-area></script-area>
 
       </html>`
   }
@@ -53,6 +75,8 @@ export default class InlineCodePreview {
   }
   
   update({ scripts, stylesheets, content, editorData }) { 
-    this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts, editorData: editorData })
+    this.scripts = scripts 
+    this.editorData = editorData
+    this.element.srcdoc = this.generateSrcDoc({ content, stylesheets })
   }
 }
