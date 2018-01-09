@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased] - 2018-01-09
+### Added
+  - `beforeEach` and `afterEach` test functions, based on Jasmine
+  - Support for pending tests through the `xit` function
+  - Disabled suites through the `xdescribe` function
+  
+### Changed  
+  - In an `it` block, the `this` keyword is an empty object that is cleared between calls to `it`
+  - Improved test failure messages
+
+### Fixed
+  - Incorrect test counting – based on expect calls rather than it calls
+
 ## [0.9.0] - 2018-01-08
 ### Added
   - Various keyboard shortcuts 
