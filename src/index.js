@@ -67,7 +67,6 @@ export default class InlineCodeSuite {
       inlineCodeConsole: this.console, 
       importScripts: this.importScripts
     })
-
     if (this.settings.hasConsole) {
       this.createConsole()
     }
@@ -160,17 +159,20 @@ export default class InlineCodeSuite {
     }
   }
 
-  createPreview() {
+  async createPreview() {
+    // let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
+    // const dryRun = await this.dryRun(mergedScripts)
+    // if (!dryRun.success) { mergedScripts = {} }
+
     if ( !this.content(this.editors) ) { return }
     this.preview = new InlineCodePreview({ 
       content: this.content(this.editors), 
       editorData: this.getEditorData(),
       height: this.settings.height, 
       root: this.elements.outputScroller, 
-      scripts: this.mergedScripts(this.editors, this.includeScripts), 
       stylesheets: this.stylesheets(this.editors), 
       settings: this.settings.preview,
-      onError: (e) => {
+      log: (e) => {
         if (this.console) {
           this.console.appendOutput(e)
         }
@@ -220,7 +222,12 @@ export default class InlineCodeSuite {
     button.onclick = e => {
       let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
       let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + editor.rendered.getValue()
-      this.runScript({ script: mergedScript })
+      if (this.preview) {
+        this.updatePreview({ value: editor.rendered.getValue(), type: `text/${editor.mode}` })
+        if (this.settings.hasConsole) { this.showConsole() }
+      } else {
+        this.runScript({ script: mergedScript })
+      }
     }
     
     this.elements.buttons.focus.push(button)
@@ -289,6 +296,9 @@ export default class InlineCodeSuite {
    * @returns undefined
    */
   renderEditor({ editor, index, storedEditor = {} }) {
+    const validModes = ['css', 'htmlmixed', 'javascript', 'jsx', 'ruby', 'xml']
+    if ( !validModes.includes(editor.mode) ) { throw new Error(`"${editor.mode}" is an invalid editor mode`)}
+
     editor.id = this.id()
 
     // Format the raw editor's value by removing any extraneous indentation
@@ -301,7 +311,7 @@ export default class InlineCodeSuite {
       root: this.elements.editorScroller, 
       mode: editor.mode, 
       name: editor.name, 
-      id: editor.id , 
+      id: editor.id, 
       height: this.settings.height, 
       readOnly: editor.readOnly || false,
       theme: editor.theme, 
@@ -317,7 +327,7 @@ export default class InlineCodeSuite {
     editor.rendered.element.style.width = `${100 / this.editors.length}%`
   }
 
-  async runScript({ script, clear = true, showConsole = true, showErrors = true }) {
+  async runScript({ script, clear = true, showConsole = true, showErrors = true, silentOutput = false }) {
     let compiled = await this.compiler.compile({
       code: script,
       logOnly: true,
@@ -325,8 +335,12 @@ export default class InlineCodeSuite {
     })
 
     if (clear) { this.console.clear({ starterScript: compiled.success ? script : '' }) }
-    if (showErrors || compiled.success == true) {
+    if (!silentOutput && (showErrors || compiled.success == true) ) {
       this.console.appendOutput( compiled.output )
+    }
+    if (silentOutput && showErrors && !compiled.success) {
+      console.log(compiled)
+      this.console.appendOutput( `${compiled.outputData.errorName}:  ${compiled.outputData.result}` )
     }
     if (showConsole && this.settings.hasConsole) { this.showConsole() }
 
@@ -498,12 +512,19 @@ export default class InlineCodeSuite {
     return stylesheets
   }
 
-  async updatePreview() {
+  async dryRun(mergedScripts) {
+    const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '')
+    const outputTest = await this.runScript({ script: mergedScript, showConsole: false, silentOutput: true, showErrors: true })
+    if (outputTest.danger) { return {success: false} }
+    return {success: true}
+  }
+
+  async updatePreview(script) {
     const mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
+    if (script) { mergedScripts.push(script) }
     if (mergedScripts.length) { 
-      const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '')
-      const outputTest = await this.runScript({ script: mergedScript, showConsole: false })
-      if (outputTest.danger) { return false }
+      const dryRun = await this.dryRun(mergedScripts)
+      if (!dryRun.success) { return false }
     }
     
     this.preview.update({ 

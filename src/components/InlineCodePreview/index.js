@@ -6,15 +6,17 @@
 
 import './style.scss'
 
+import testSuite from '!raw-loader!./../../assets/scripts/test-suite.js'
+
 export default class InlineCodePreview {
-  constructor({ root, scripts, stylesheets, content, height, settings, editorData, onError }) {
+  constructor({ root, scripts = [], stylesheets, content, height, settings, editorData, log }) {
     this.settings = settings
     this.scripts = scripts
     this.editorData = editorData
-    this.onError = onError
+    this.log = log
 
     this.element = document.createElement('iframe')
-    this.addScripts()
+    this.onDocumentLoad()
     this.element.classList.add('inline-code-preview')
     this.element.sandbox = 'allow-scripts allow-same-origin'
     this.element.srcdoc = this.generateSrcDoc({ content: content, stylesheets: stylesheets, scripts: scripts, editorData: editorData })
@@ -23,29 +25,60 @@ export default class InlineCodePreview {
   }
 
   addScripts() {
+    if (!this.scripts) { return }
+
+    this.scripts.map( script => {
+      const el = this.contentWindow.document.createElement('script')
+      el.async = false
+      el.type = script.type
+      if (script.src) { el.src = script.src }
+      el.text = `
+        try {
+          ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
+        } catch (e) {
+            window.reportError(e)
+        }`
+      this.contentWindow.document.querySelector('script-area').appendChild(el)
+    })
+  }
+
+  addTestingSuite() {
+    this.scripts.unshift({
+      type: 'text/javascript',
+      value: testSuite
+    })
+  }
+
+  onDocumentLoad() {
     this.element.onload = () => {
-      const contentWindow = this.element.contentWindow
-      contentWindow.reportError = (e) => {
-        console.log('reporting error...', e)
-        this.onError(e)
+      this.contentWindow = this.element.contentWindow
+      this.contentWindow.reportError = (e) => {
+        console.log('(inline code editor) ', e)
+        this.log(e)
       }
-      const blackHole = new Proxy(() => {}, { get: () => blackHole, apply: () => blackHole} )
-      contentWindow.console = blackHole
-      contentWindow.inlineCodeSuite = { editorData: this.editorData }
       
-      this.scripts.map( script => {
-        const el = contentWindow.document.createElement('script')
-        el.async = false
-        el.type = script.type
-        if (script.src) { el.src = script.src }
-        el.text = `
-          try {
-            ${typeof script.value === 'function' ? `(${script.value.toString()})()` : script.value}
-          } catch (e) {
-              window.reportError(e)
-          }`
-        contentWindow.document.querySelector('script-area').appendChild(el)
-      })
+      this.contentWindow.inlineCodeSuite = { editorData: this.editorData }
+      
+      this.defineConsole()
+      this.defineAlert()
+      this.addTestingSuite()
+      this.addScripts()
+    }
+  }
+
+  defineConsole() {
+    this.contentWindow.console = {
+      log: (...msgs) => {
+        console.log('(inline code editor log) ', ...msgs)
+        this.log(msgs)
+      }
+    }
+  }
+
+  defineAlert() {
+    this.contentWindow.alert = (...msgs) => {
+      console.log('(inline code editor alert) ', ...msgs)
+      this.log(`alert: ${msgs.join(' ')}`)
     }
   }
   
@@ -60,7 +93,7 @@ export default class InlineCodePreview {
         <body>
           ${ content }
         </body>
-
+        
         <script-area></script-area>
 
       </html>`
@@ -75,7 +108,7 @@ export default class InlineCodePreview {
   }
   
   update({ scripts, stylesheets, content, editorData }) { 
-    this.scripts = scripts 
+    this.scripts = scripts || []
     this.editorData = editorData
     this.element.srcdoc = this.generateSrcDoc({ content, stylesheets })
   }

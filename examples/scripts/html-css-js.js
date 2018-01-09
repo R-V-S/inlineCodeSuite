@@ -6,7 +6,7 @@
     // useLocalStorage: false,
     enableFullscreen: true,
     // autoRun: false,
-    autoPreview: true,
+    // autoPreview: true,
     editors: [
       {
         name: 'HTML',
@@ -135,7 +135,7 @@
     scripts: [
       {
         type: 'text/javascript',
-        value: 'const a = 7'
+        value: 'var a = 7'
       }
     ],
     importScripts: ['scripts/importedScript.js']

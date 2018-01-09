@@ -5,21 +5,25 @@
   - Various keyboard shortcuts 
   - Support for multiple cursors
   - `autoPreview` option to allow HTML & CSS changes to automatically update the preview even when `autoRun` is set to `false`
-  - Material Icons
+  - Material Icons instead of unicode symbols for operation buttons
+  - Support for `.not.` qualifier for tests, like Jasmine
+  - Ability to run tests on preview (`document` object)
+  - Better failure messages for test matchers
 
 ### Changed
-  - Refactored inlineCodeConsole so that it uses the existing compiler
-  - Refactored preview so that it catches errors and displays them in the inline console
-  - Less funny console responses to attempted alerts or console logs
-  - Slightly more verbose error messages
-  - Refactored top-level settings so that they're consolidated under one settings object
+  - Console component refactored so that it uses the existing compiler rather than its own instance
+  - Preview component refactored so that it catches errors and displays them in the inline console
+  - More meaningful console responses to attempted alerts 
+  - Error messages slightly more verbose
+  - Top-level settings consolidated under one settings object
+  - Test suite and web worker templates are split out into their own files
 
 ### Fixed
-  - Fixed issue where alerts in the console would return a message about a failed match
-  - Fixed issue where using document object would cause either the script or the console to report errors (or fail silently). This replaces a short term fix that suppressed any document-related errors (along with subsequent errors).
+  - Alerts in the console would return a message about a failed match
+  - Using document object would cause either the script or the console to report errors (or fail silently). This replaces a short term fix that suppressed any document-related errors (along with subsequent errors).
+  - An infinite loop could still lock up if it's in an editor on initial page load (e.g. if it was saved to localStorage)
 
 ### Known Issues
-  - Logging the document object from a script tab logs nothing (document is now a black hole/trap in the compiler)
   - Displaying line numbers in errors is problematic because the scripts are merged together before compiling
 
 ## [0.8.0] - 2018-01-05
@@ -28,18 +32,18 @@
 
 ## [0.7.1] - 2018-01-05
 ### Added
-  - Ability to store current user content to LocalStorage, including:
+  - Ability to store current user content to localStorage, including:
     - A `useLocalStorage` setting, which defaults to `true`
     - A refresh button in the lower left to restore default values
   - `setPreviewSettings` method added
 
 ### Changed
-  - Editor content is saved in LocalStorage by default
+  - Editor content is saved in localStorage by default
   - JSHint warnings about undefined variables have been disabled
 
 ## [0.6.3] - 2018-01-04
 ### Fixed
-  - Fixed issue where incomplete tags in HTML tab were causing the script tags defined beneath them to show up
+  - Incomplete tags in HTML tab were causing the script tags defined beneath them to show up
 
 ## [0.6.2] - 2018-01-04
 ### Fixed

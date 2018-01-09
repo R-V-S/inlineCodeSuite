@@ -26,6 +26,7 @@
     "node-sass": "^4.7.2",
     "obj-stringify": "^1.0.0",
     "path": "^0.12.7",
+    "raw-loader": "^0.5.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.13.1",
     "uglify-js": "^2.8.29",
