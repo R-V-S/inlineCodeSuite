@@ -34,27 +34,29 @@
         hasPreview: false,
         value: `
           describe("List", () => {
-            const ul = document.getElementById('list');
-            const items = ul.getElementsByTagName('li');
+            beforeEach( () => {
+              this.ul = document.getElementById('list');
+              this.items = ul.getElementsByTagName('li');
+            })
             
             it("should exist", () => {
-              expect(ul).not.toBeNull();
+              expect(this.ul).not.toBeNull();
             });
           
             it("should have a list item with the text 'Biker Jacket'", () => {
-              expect(items[0].innerText.toLowerCase()).toBe('biker jacket');
+              expect(this.items[0].innerText.toLowerCase()).toBe('biker jacket');
             });
           
             it("should have a list item with the text 'Mens T-shirt'", () => { 
-              expect(items[1].innerText.toLowerCase()).toBe('mens t-shirt');
+              expect(this.items[1].innerText.toLowerCase()).toBe('mens t-shirt');
             });
             
             it("should have a class named 'clothing-list'", () => {
-              expect(ul.classList.contains('clothing-list')).toBeTruthy()
+              expect(this.ul.classList.contains('clothing-list')).toBeTruthy()
             });
             
             it("should have pink background", () => {
-              expect( window.getComputedStyle(ul).backgroundColor ).toBe('rgb(255, 192, 203)')
+              expect( window.getComputedStyle(this.ul).backgroundColor ).toBe('rgb(255, 192, 203)')
             });
           });
         `,

@@ -7,7 +7,7 @@
   - Disabled suites through the `xdescribe` function
   
 ### Changed  
-  - In an `it` block, the `this` keyword is an empty object that is cleared between calls to `it`
+  - In an `it` block, the `this` keyword is now an empty object that is cleared between calls to `it`
   - Improved test failure messages
 
 ### Fixed
@@ -20,8 +20,8 @@
   - `autoPreview` option to allow HTML & CSS changes to automatically update the preview even when `autoRun` is set to `false`
   - Material Icons instead of unicode symbols for operation buttons
   - Support for `.not.` qualifier for tests, like Jasmine
-  - Ability to run tests on preview (`document` object)
-  - Better failure messages for test matchers
+  - Ability to run tests on preview content (`document` object access)
+  - Better failure messages for tests
 
 ### Changed
   - Console component refactored so that it uses the existing compiler rather than its own instance

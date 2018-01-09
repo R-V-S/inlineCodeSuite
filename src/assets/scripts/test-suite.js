@@ -46,17 +46,30 @@ afterEach = (callback) => {
 }
 
 it = (itDescription, testFunction) => {
+  if (ICS_Spec.terminateEarly) { return }
   ICS_Spec.itDescription = itDescription
   ICS_Spec.itPasses = true
   ICS_Spec.counts.run++
   try {
     const itThis = {}
-    if (ICS_Spec.beforeEachCallback) { ICS_Spec.beforeEachCallback.apply(itThis) }
+    try {
+      if (ICS_Spec.beforeEachCallback) { ICS_Spec.beforeEachCallback.apply(itThis) }
+    } catch (e) {
+      ICS_Spec.terminateEarly = true
+      console.log(`Terminating early because of error(s) in beforeEach. \n`)  
+      console.log(e.message)
+    }
     testFunction.apply(itThis)
-    if (ICS_Spec.afterEachCallback) { ICS_Spec.afterEachCallback.apply(itThis) }
+    try {
+      if (ICS_Spec.afterEachCallback) { ICS_Spec.afterEachCallback.apply(itThis) }
+    } catch (e) {
+      ICS_Spec.terminateEarly = true
+      console.log(`Terminating early because of error(s) in afterEach. \n`)  
+      console.log(e.message)
+    }
     ICS_Spec.itPasses ? ICS_Spec.counts.passed++ : ICS_Spec.counts.failed++
   } catch (e) {
-    console.log('Encountered error will trying to run tests. \n')
+    console.log(`Encountered error(s) while trying to run test: ${ICS_Spec.itDescription} \n`)
     console.log(e.message)
     ICS_Spec.counts.failed++
   }
