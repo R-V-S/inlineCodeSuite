@@ -12,13 +12,14 @@ const ICS_Spec = {
     this.afterEachCallback = null
     this.itDescription = null
     this.itPasses = null
+    this.terminateEarly = false
   }
 }
 
 describe = (describeDescription, specDefinitions) => {
   ICS_Spec.reset()
   if (!describeDescription || !specDefinitions) { return }
-  console.log(`Testing ${describeDescription.toLowerCase()}... \n`)
+  console.log(`Testing ${describeDescription.toLowerCase()}................ \n`)
   
   try {
     specDefinitions()
@@ -32,7 +33,7 @@ describe = (describeDescription, specDefinitions) => {
   }
   ICS_Spec.description = describeDescription
   delete(ICS_Spec.itDescription)
-  console.log(` \n${ICS_Spec.counts.run} tests run. ${ICS_Spec.counts.passed} passed. ${ICS_Spec.counts.failed} failed. ${ICS_Spec.counts.pending} pending.`)
+  console.log(` \n${ICS_Spec.counts.run} tests run. ${ICS_Spec.counts.passed} passed. ${ICS_Spec.counts.failed} failed. ${ICS_Spec.counts.pending} pending.\n`)
 }
 
 xdescribe = () => {}
@@ -50,27 +51,33 @@ it = (itDescription, testFunction) => {
   ICS_Spec.itDescription = itDescription
   ICS_Spec.itPasses = true
   ICS_Spec.counts.run++
+  const terminateEarly = (e) => {
+    ICS_Spec.terminateEarly = true
+    console.log(e.message)
+    ICS_Spec.counts.failed++
+  }
   try {
     const itThis = {}
     try {
       if (ICS_Spec.beforeEachCallback) { ICS_Spec.beforeEachCallback.apply(itThis) }
     } catch (e) {
-      ICS_Spec.terminateEarly = true
       console.log(`Terminating early because of error(s) in beforeEach. \n`)  
-      console.log(e.message)
+      terminateEarly(e)
+      return
     }
     testFunction.apply(itThis)
     try {
       if (ICS_Spec.afterEachCallback) { ICS_Spec.afterEachCallback.apply(itThis) }
     } catch (e) {
-      ICS_Spec.terminateEarly = true
       console.log(`Terminating early because of error(s) in afterEach. \n`)  
-      console.log(e.message)
+      terminateEarly(e)
+      return
     }
     ICS_Spec.itPasses ? ICS_Spec.counts.passed++ : ICS_Spec.counts.failed++
   } catch (e) {
     console.log(`Encountered error(s) while trying to run test: ${ICS_Spec.itDescription} \n`)
     console.log(e.message)
+    console.log('')
     ICS_Spec.counts.failed++
   }
 }

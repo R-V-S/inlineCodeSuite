@@ -163,7 +163,16 @@ Adds a callback function that's triggered based on specific events. Takes two ar
 
 ### Testing
 
-The inlineCodeSuite includes a rudimentary testing suite based on Jasmine. It supports `describe` and `it` methods, as well as the following matchers:
+The inlineCodeSuite includes a rudimentary testing suite based on Jasmine. It supports the following functions:
+
+* `describe`: Groups a suite of tests together and resets test counts
+* `xdescribe`: An empty trap, convenient for temporarily disabling a test suite
+* `it`: Defines a test
+* `xit` : Defines a pending test that doesn't run
+* `beforeEach`: Sets a callback function to be run before each individual test. Tests are terminated early if there's an error in this callback
+* `afterEach`: Sets a callback function to be run after each individual test. Like `beforeEach`, tests are terminated early if there's an error in this callback
+ 
+It supports the following matchers:
 
 * `toBe(real)`: Matches with strict equality (`===`)
 * `toBeCloseTo(expected, precision)`: Matches a number down to the specified precision (number of decimals)
@@ -196,6 +205,26 @@ describe("Your function for the final round", () => {
     expect( add(0,0) ).toBe(0);
   });
 });     
+```
+
+Here's a slightly more complex example that uses `beforeEach` and demonstrates `beforeEach`, as well as how each `it` block receives its own empty object as `this`:
+
+```js
+describe("A spec", function() {
+  beforeEach(function() {
+    this.foo = 3;
+  });
+
+  it("can use the `this` to share state", function() {
+    expect(this.foo).toEqual(3);
+    this.bar = "test pollution?";
+  });
+
+  it("prevents test pollution by having an empty `this` created for the next spec", function() {
+    expect(this.foo).toEqual(3);
+    expect(this.bar).toBe(undefined);
+  });
+});
 ```
 
 ## FAQ

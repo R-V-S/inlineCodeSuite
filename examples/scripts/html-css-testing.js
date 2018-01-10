@@ -29,6 +29,14 @@
         `
       },
       {
+        name: 'JS',
+        mode: 'javascript',
+        value: `
+          
+        `,
+        runButton: 'Run'
+      },
+      {
         name: 'Tests',
         mode: 'javascript',
         hasPreview: false,
