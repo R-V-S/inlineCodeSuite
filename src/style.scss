@@ -78,14 +78,14 @@
     }
   }
   
-  .inlineCodeSuite-run-buttons {
+  .inlineCodeSuite-button-bar {
     clear: both;
     overflow: hidden;
     
-    button {
+    .inlineCodeSuite-run-buttons {
       float: right;
     }
-
+    
     .inlineCodeSuite-operation-buttons {
       button {
         float: left;

@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - 2018-01-09
+## [0.10.0] - 2018-01-09
 ### Added
   - `beforeEach` and `afterEach` test functions, based on Jasmine
   - Support for pending tests through the `xit` function
@@ -11,7 +11,10 @@
   - Improved test failure messages
 
 ### Fixed
-  - Incorrect test counting – based on expect calls rather than it calls
+  - Tests were being counting incorrectly – the counts were based on calls to `expect` rather than calls to `it` (whoops!)
+  - The order of the editor run buttons was inconsistent with the order of the editor tabs
+  - Alerts and console logs were running twice when `autoRun` was `false` and `autoPreview` was `true`
+
 
 ## [0.9.0] - 2018-01-08
 ### Added

@@ -223,7 +223,7 @@ export default class InlineCodeSuite {
       let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
       let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + editor.rendered.getValue()
       if (this.preview) {
-        this.updatePreview({ value: editor.rendered.getValue(), type: `text/${editor.mode}` })
+        this.updatePreview( editor.hasPreview == false ? { value: editor.rendered.getValue(), type: `text/${editor.mode}` } : {} )
         if (this.settings.hasConsole) { this.showConsole() }
       } else {
         this.runScript({ script: mergedScript })
@@ -339,7 +339,6 @@ export default class InlineCodeSuite {
       this.console.appendOutput( compiled.output )
     }
     if (silentOutput && showErrors && !compiled.success) {
-      console.log(compiled)
       this.console.appendOutput( `${compiled.outputData.errorName}:  ${compiled.outputData.result}` )
     }
     if (showConsole && this.settings.hasConsole) { this.showConsole() }
@@ -470,17 +469,23 @@ export default class InlineCodeSuite {
         }
     })
 
+    this.elements.buttonBarSection = this.createElement({
+      tag: 'section', 
+      classes: 'inlineCodeSuite-buttons inlineCodeSuite-button-bar', 
+      parent: this.elements.root
+  })
+
     this.elements.runButtonSection = this.createElement({
         tag: 'section', 
         classes: 'inlineCodeSuite-buttons inlineCodeSuite-run-buttons', 
-        parent: this.elements.root
+        parent: this.elements.buttonBarSection
     })
 
     // the operation button section is for subtle, special purpose operations like "refresh". they go in the bottom left.
     this.elements.operationButtonSection = this.createElement({ 
       tag: 'section', 
       classes: 'inlineCodeSuite-operation-buttons', 
-      parent: this.elements.runButtonSection
+      parent: this.elements.buttonBarSection
     })
   }
   
