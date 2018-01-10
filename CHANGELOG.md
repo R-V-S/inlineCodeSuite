@@ -15,6 +15,8 @@
   - The order of the editor run buttons was inconsistent with the order of the editor tabs
   - Alerts and console logs were running twice when `autoRun` was `false` and `autoPreview` was `true`
 
+### Known Issue
+  - Attempts to copy text from the console fail
 
 ## [0.9.0] - 2018-01-08
 ### Added
@@ -35,7 +37,7 @@
   - Test suite and web worker templates are split out into their own files
 
 ### Fixed
-  - Alerts in the console would return a message about a failed match
+  - Alerts in the console could return a message about a failed match
   - Using document object would cause either the script or the console to report errors (or fail silently). This replaces a short term fix that suppressed any document-related errors (along with subsequent errors).
   - An infinite loop could still lock up if it's in an editor on initial page load (e.g. if it was saved to localStorage)
 
