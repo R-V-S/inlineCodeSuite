@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.10.0] - 2018-01-09
+## [0.10.0] - 2018-01-10
 ### Added
   - `beforeEach` and `afterEach` test functions, based on Jasmine
   - Support for pending tests through the `xit` function
