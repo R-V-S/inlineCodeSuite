@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10.1] - 2018-01-11
+### Fixed
+  - `hasConsole` option was raising an error if set to false
+  - Script run buttons were showing up before editor run buttons, an unintended change in order 
+
 ## [0.10.0] - 2018-01-10
 ### Added
   - `beforeEach` and `afterEach` test functions, based on Jasmine

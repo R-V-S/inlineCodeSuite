@@ -38,18 +38,17 @@ export default class InlineCodeSuite {
     this.scaffoldElements({ root: root, editorCount: this.editors.length })
     this.addDependencies()
     
-    this.runScripts.forEach( script => this.createScriptRunButton({ script: script }) )
     
     // get stored editor data
     if (this.settings.useLocalStorage && this.settings.slug && localStorage) {
       this.storedEditorData = JSON.parse(localStorage.getItem(this.settings.slug))
       this.createRefreshButton()
     }
-
+    
     if (this.settings.enableFullscreen) {
       this.createFullscreenButton()
     }
-
+    
     // create editors
     for (let index in this.editors) {
       // grab stored editor data, if it exists, for this particular editor. Default storedEditor to an empty object so that we can
@@ -58,15 +57,19 @@ export default class InlineCodeSuite {
       const storedEditor = this.storedEditorData ? this.storedEditorData[ editor.name ] : {}
       this.renderEditor({ editor, index, storedEditor })
     }
+
     
     this.activeId = this.editors[0].id
     this.activeFocusButton().classList.add('active')
+    
+    this.runScripts.forEach( script => this.createScriptRunButton({ script: script }) )
 
     this.compiler = new InlineCodeCompiler({ 
       dispatchEvent: (...params) => this.dispatchEvent(...params),
       inlineCodeConsole: this.console, 
       importScripts: this.importScripts
     })
+    
     if (this.settings.hasConsole) {
       this.createConsole()
     }
@@ -160,10 +163,6 @@ export default class InlineCodeSuite {
   }
 
   async createPreview() {
-    // let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
-    // const dryRun = await this.dryRun(mergedScripts)
-    // if (!dryRun.success) { mergedScripts = {} }
-
     if ( !this.content(this.editors) ) { return }
     this.preview = new InlineCodePreview({ 
       content: this.content(this.editors), 
@@ -187,14 +186,14 @@ export default class InlineCodeSuite {
 
   showConsole() {
     this.elements.outputScroller.style.transform = `translateX(0%)`
-    this.consoleButton.classList.add('active')
+    if (this.settings.hasConsole) { this.consoleButton.classList.add('active') }
     if (this.preview) { this.previewButton.classList.remove('active') }
   }
 
   showPreview() {
-    this.elements.outputScroller.style.transform = `translateX(-50%)`
+    this.elements.outputScroller.style.transform = `translateX(${ this.settings.hasConsole ? -50 : 0}%)`
     this.previewButton.classList.add('active')
-    this.consoleButton.classList.remove('active')
+    if (this.settings.hasConsole) { this.consoleButton.classList.remove('active') }
   }
 
   async createConsole() {
@@ -334,7 +333,7 @@ export default class InlineCodeSuite {
       editorData: this.getEditorData()
     })
 
-    if (clear) { this.console.clear({ starterScript: compiled.success ? script : '' }) }
+    if (clear && this.settings.hasConsole) { this.console.clear({ starterScript: compiled.success ? script : '' }) }
     if (!silentOutput && (showErrors || compiled.success == true) ) {
       this.console.appendOutput( compiled.output )
     }
@@ -546,7 +545,7 @@ export default class InlineCodeSuite {
     } else {
       this.runEditorScripts()
     }
-    this.console.scrollToBottom()
+    if (this.settings.hasConsole) { this.console.scrollToBottom() } else { this.showPreview() }
   }
 }
 
