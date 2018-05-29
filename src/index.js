@@ -110,7 +110,7 @@ export default class InlineCodeSuite {
         result.push({ type: 'text/javascript', value: editor.rendered.getValue() })
       }
     })
-    
+
     return result
   }
   
@@ -213,14 +213,15 @@ export default class InlineCodeSuite {
   }
   
   createEditorRunButton({ editor }) {
-    let button = document.createElement('button')
+    const button = document.createElement('button')
     button.textContent = editor.runButton || 'RUN'
     button.dataset.id = editor.id
     this.elements.runButtonSection.appendChild(button)
     
     button.onclick = e => {
-      let mergedScripts = this.mergedScripts(this.editors, this.includeScripts)
-      let mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + editor.rendered.getValue()
+      const otherEditors = this.editors.filter( ed => ed.id !== editor.id );
+      const mergedScripts = this.mergedScripts(otherEditors, this.includeScripts)
+      const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '') + editor.rendered.getValue()
       if (this.preview) {
         this.updatePreview( editor.hasPreview == false ? { value: editor.rendered.getValue(), type: `text/${editor.mode}` } : {} )
         if (this.settings.hasConsole) { this.showConsole() }
@@ -518,7 +519,7 @@ export default class InlineCodeSuite {
 
   async dryRun(mergedScripts) {
     const mergedScript = mergedScripts.reduce( (all, script) => all += script.value + '\n', '')
-    const outputTest = await this.runScript({ script: mergedScript, showConsole: false, silentOutput: true, showErrors: true })
+    const outputTest = await this.runScript({ script: mergedScript, showConsole: false, silentOutput: true, showErrors: false })
     if (outputTest.danger) { return {success: false} }
     return {success: true}
   }

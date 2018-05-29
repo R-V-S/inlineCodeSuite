@@ -20,10 +20,11 @@
       width: 25px;
     }
     &.prompt::before {
-      content: '\f054';
+      content: '\e5cc';
       color: #888;
-      font: normal normal normal 14px/1 FontAwesome;
-      margin-left: 0px;
+      font-family: 'material icons';
+      font-size: 20px;
+      margin: -8px 0px 0px -5px;
       position: absolute;
       top: 8px;
     }

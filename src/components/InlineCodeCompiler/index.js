@@ -36,7 +36,7 @@ export default class InlineCodeCompiler {
 
   async compile({code, logOnly = false, editorData = {}, mode = 'script' }) {
     code = this.dispatchEvent('compilerWillRun', { code: code, importScripts: this.importScripts, logOnly: logOnly }) || code
-    let outputString, outputData, log = [], success = false, danger = true
+    let outputString, outputData, log = [], success = false, danger = false
     try {
       const worker = this.createWorker({ editorData, mode })
       
